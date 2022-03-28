@@ -1,0 +1,12 @@
+[http]
+	proxy = http://127.0.0.1:7890
+[https]
+	proxy = https://127.0.0.1:7890
+[user]
+	name = aucker
+	email = aucker@qq.com
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
