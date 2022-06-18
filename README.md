@@ -5,4 +5,4 @@ some proxy config only worked when using [ClashX](https://github.com/yichengchen
 ## The `730` folder
 The 730 folder is a windows config, and it should be put at the Destination at:
 > **Note**
-> C:\Program Files (x86)\Steam\userdata\455459836
+>`C:\Program Files (x86)\Steam\userdata\455459836`
