@@ -1,0 +1,41 @@
+"730"
+{
+	"ChangeNumber"		"-7504899028597345843"
+	"ostype"		"16"
+	"cfg/config.cfg"
+	{
+		"root"		"0"
+		"size"		"16209"
+		"localtime"		"1639750712"
+		"time"		"1639750707"
+		"remotetime"		"1639750707"
+		"sha"		"5a85890ed40adc40f71adc283c3b3fb0cf4d83a5"
+		"syncstate"		"1"
+		"persiststate"		"0"
+		"platformstosync2"		"-1"
+	}
+	"cfg/csgo_saved_item_shuffles.txt"
+	{
+		"root"		"0"
+		"size"		"24"
+		"localtime"		"1642708360"
+		"time"		"1642737158"
+		"remotetime"		"1642737158"
+		"sha"		"c7bdc563982fc4ddddb9e6f8853b298967d858f9"
+		"syncstate"		"1"
+		"persiststate"		"0"
+		"platformstosync2"		"-1"
+	}
+	"cfg/xhair3_backup.cfg"
+	{
+		"root"		"0"
+		"size"		"16350"
+		"localtime"		"1639402378"
+		"time"		"1639402373"
+		"remotetime"		"1639402373"
+		"sha"		"cd315c142549cf08df4ec98481b6e287814a6670"
+		"syncstate"		"1"
+		"persiststate"		"0"
+		"platformstosync2"		"-1"
+	}
+}
