@@ -130,3 +130,9 @@ export CPPFLAGS="-I/usr/local/opt/postgresql@13/include"
 export PKG_CONFIG_PATH="/usr/local/opt/postgresql@13/lib/pkgconfig"
 export PATH="/usr/local/sbin:$PATH"
 export GOPATH=$HOME/go-workspace
+
+# this is the proxy for WSL2
+host_ip=$(cat /etc/resolv.conf | grep "nameserver" | cut -f 2 -d " ")
+export HTTP_PROXY="http://$host_ip:7890"
+export HTTPS_PROXY="http://$host_ip:7890"
+export ALL_PROXY="http://$host_ip:7890"
