@@ -8,7 +8,8 @@ export ZSH="/Users/aucker/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+# ZSH_THEME="robbyrussell"
+ZSH_THEME="eastwood"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -103,7 +104,6 @@ alias gcc='gcc-11'
 alias g++='g++-11'
 alias c++='c++-11'
 #alias cc='gcc-11'
-alias go='http_proxy=127.0.0.1:7890 go'
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -120,7 +120,7 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-
+# this is the old config on macOS 15.6
 export PATH="/Users/aucker/local/bin:$PATH"
 export PATH="/usr/local/mysql-8.0.21-macos10.15-x86_64/bin:$PATH"
 export PATH=/opt/apache-maven-3.8.4/bin:$PATH
@@ -131,8 +131,19 @@ export PKG_CONFIG_PATH="/usr/local/opt/postgresql@13/lib/pkgconfig"
 export PATH="/usr/local/sbin:$PATH"
 export GOPATH=$HOME/go-workspace
 
-# this is the proxy for WSL2
+# this is the proxy for WSL2, only for WSL2
 host_ip=$(cat /etc/resolv.conf | grep "nameserver" | cut -f 2 -d " ")
 export HTTP_PROXY="http://$host_ip:7890"
 export HTTPS_PROXY="http://$host_ip:7890"
 export ALL_PROXY="http://$host_ip:7890"
+
+# Fix the vscode terminal sometimes cannot open new vscode issue.
+fix_wsl2_interop() {
+  for i in $(pstree -np -s $$ | grep -o -E '[0-9]+'); do
+    if [[ -e "/run/WSL/${i}_interop" ]]; then
+      export WSL_INTEROP=/run/WSL/${i}_interop
+    fi
+  done
+}
+
+export PATH=$PATH:/usr/local/go/bin
