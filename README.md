@@ -13,9 +13,11 @@ The 730 folder is a windows config, and it should be put at the Destination at:
 
 `.vimrc` should be placed at `~/`, path: `~/.vimrc`
 
-## Learing Vim Text Object
+## Learing [Vim Text Object](https://blog.carbonfive.com/vim-text-objects-the-definitive-guide/)
 
 By the way, surround vim is awesome.😎
+![screencapture-github-tpope-vim-surround-2022-10-22-16_12_15](https://user-images.githubusercontent.com/41871212/197328691-d82e72b0-3238-4570-9a2f-9f6e967ade58.png)
+
 
 Just remember the *i* and *a* operations, `i` for `inner`, `a` for `a`.
 
