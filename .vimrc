@@ -127,7 +127,7 @@ noremap J 5j
 " N key: go to the start of the line
 noremap N 0
 " I key: go to the end of the line
-noremap I $
+" noremap I $
 
 " Faster in-line navigation
 noremap W 5w
