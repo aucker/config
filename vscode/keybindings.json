@@ -1,0 +1,69 @@
+// $HOME/.config/Code/User/keybindings.json
+// $HOME/Library/Application Support/Code/User/keybindings.json
+// $HOME/AppData/Roaming/Code/User/keybindings.json
+// Place your key bindings in this file to override the defaults
+[
+    {
+        "key": "ctrl+j",
+        "command": "selectNextSuggestion",
+        "when": "suggestWidgetVisible"
+    },
+    {
+        "key": "ctrl+k",
+        "command": "selectPrevSuggestion",
+        "when": "suggestWidgetVisible"
+    },
+    {
+        "key": "ctrl+j",
+        "command": "workbench.action.quickOpenSelectNext",
+        "when": "inQuickOpen"
+    },
+    {
+        "key": "ctrl+k",
+        "command": "workbench.action.quickOpenSelectPrevious",
+        "when": "inQuickOpen"
+    },
+
+    // switch between terminals with `ctrl + shift + j/k`
+    {   "key": "ctrl+shift+j",
+        "command": "workbench.action.terminal.focusNext",
+        "when": "terminalFocus" // tricky here, only k works when terminal is not focused.
+    },
+    {   "key": "ctrl+shift+k",
+        "command": "workbench.action.terminal.focusPrevious",
+        "when": "terminalFocus"
+    },
+
+    // switch between terminals within a splitted tab with `ctrl + j/k`
+    {   "key": "ctrl+j",
+        "command": "workbench.action.terminal.focusNextPane",
+        "when": "terminalFocus"
+    },
+    {   "key": "ctrl+k",
+        "command": "workbench.action.terminal.focusPreviousPane",
+        "when": "terminalFocus"
+    },
+
+    // Toggle between terminal and editor focus
+    {
+        "key": "ctrl+`",
+        "command": "workbench.action.terminal.focus"
+    },
+    {
+        "key": "ctrl+`",
+        "command": "workbench.action.focusActiveEditorGroup",
+        "when": "terminalFocus"
+    },
+
+    // Toggle between editors
+    {
+        "key": "ctrl+tab",
+        "command": "workbench.action.nextEditor",
+        "when": "editorFocus"
+    },
+    {
+        "key": "ctrl+shift+k",
+        "command": "workbench.action.previousEditor",
+        "when": "editorFocus"
+    },
+]
