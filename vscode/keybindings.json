@@ -24,6 +24,16 @@
         "when": "inQuickOpen"
     },
 
+    // switch between split windows with `ctrl + j/k`
+    {   "key": "ctrl+j",
+        "command": "workbench.action.focusNextGroup",
+        "when": "multipleEditorGroups"
+    },
+    {   "key": "ctrl+k",
+        "command": "workbench.action.focusPreviousGroup",
+        "when": "multipleEditorGroups"
+    },
+
     // switch between terminals with `ctrl + shift + j/k`
     {   "key": "ctrl+shift+j",
         "command": "workbench.action.terminal.focusNext",
@@ -31,6 +41,17 @@
     },
     {   "key": "ctrl+shift+k",
         "command": "workbench.action.terminal.focusPrevious",
+        "when": "terminalFocus"
+    },
+
+    // split terminal
+    {   "key": "ctrl+shift+r", // split right
+        "command": "workbench.action.terminal.split",
+        "when": "terminalFocus"
+    },
+    // unspilt terminal
+    {   "key": "ctrl+shift+u",
+        "command": "workbench.action.terminal.kill",
         "when": "terminalFocus"
     },
 
@@ -65,5 +86,27 @@
         "key": "ctrl+shift+k",
         "command": "workbench.action.previousEditor",
         "when": "editorFocus"
+    },
+
+    // Use vim to show hover definition
+    {
+        "key": "h",
+        "command": "editor.action.scrollLeftHover",
+        "when": "editorHoverFocused",
+    },
+    {
+        "key": "l",
+        "command": "editor.action.scrollRightHover",
+        "when": "editorHoverFocused",
+    },
+    {
+        "key": "j",
+        "command": "editor.action.scrollDownHover",
+        "when": "editorHoverFocused",
+    },
+    {
+        "key": "k",
+        "command": "editor.action.scrollUpHover",
+        "when": "editorHoverFocused",
     },
 ]
