@@ -1,7 +1,7 @@
 [http]
-	proxy = http://127.0.0.1:7890
+	proxy = socks://127.0.0.1:20170
 [https]
-	proxy = https://127.0.0.1:7890
+	proxy = socks://127.0.0.1:20170
 [user]
 	name = aucker
 	email = aucker@qq.com
