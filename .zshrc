@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/aucker/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -24,14 +24,13 @@ ZSH_THEME="eastwood"
 # Case-sensitive completion must be off. _ and - will be interchangeable.
 # HYPHEN_INSENSITIVE="true"
 
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
-
-# Uncomment the following line to automatically update without prompting.
-# DISABLE_UPDATE_PROMPT="true"
+# Uncomment one of the following lines to change the auto-update behavior
+# zstyle ':omz:update' mode disabled  # disable automatic updates
+# zstyle ':omz:update' mode auto      # update automatically without asking
+# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 # Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+# zstyle ':omz:update' frequency 13
 
 # Uncomment the following line if pasting URLs and other text is messed up.
 # DISABLE_MAGIC_FUNCTIONS="true"
@@ -46,8 +45,9 @@ ZSH_THEME="eastwood"
 # ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
-# Caution: this setting can cause issues with multiline prompts (zsh 5.7.1 and newer seem to work)
-# See https://github.com/ohmyzsh/ohmyzsh/issues/5765
+# You can also set it to another string to have that shown instead of the default red dots.
+# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
+# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
 # COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
@@ -71,7 +71,7 @@ ZSH_THEME="eastwood"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git zsh-autocomplete zsh-autosuggestions fast-syntax-highlighting colored-man-pages sudo)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -80,7 +80,7 @@ source $ZSH/oh-my-zsh.sh
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
@@ -100,50 +100,51 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias gcc='gcc-11'
-alias g++='g++-11'
-alias c++='c++-11'
-#alias cc='gcc-11'
+
+
+alias c="clear"
+alias l='ls'
+alias grep='grep --color=auto'
+
+
+export PATH=$PATH:/usr/local/go/bin
+
+# GPG_TTY sign
+export GPG_TTY=$(tty)
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/aucker/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('/home/aucker/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/Users/aucker/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/aucker/anaconda3/etc/profile.d/conda.sh"
+    if [ -f "/home/aucker/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/aucker/miniconda3/etc/profile.d/conda.sh"
     else
-        export PATH="/Users/aucker/anaconda3/bin:$PATH"
+        export PATH="/home/aucker/miniconda3/bin:$PATH"
     fi
 fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-# this is the old config on macOS 15.6
-export PATH="/Users/aucker/local/bin:$PATH"
-export PATH="/usr/local/mysql-8.0.21-macos10.15-x86_64/bin:$PATH"
-export PATH=/opt/apache-maven-3.8.4/bin:$PATH
-export PATH="/usr/local/opt/postgresql@13/bin:$PATH"
-export LDFLAGS="-L/usr/local/opt/postgresql@13/lib"
-export CPPFLAGS="-I/usr/local/opt/postgresql@13/include"
-export PKG_CONFIG_PATH="/usr/local/opt/postgresql@13/lib/pkgconfig"
-export PATH="/usr/local/sbin:$PATH"
-export GOPATH=$HOME/go-workspace
+alias steam="GDK_SCALE=2 steam"
+alias cops="HTTPS_PROXY=127.0.0.1:20171 gh copilot suggest"
+alias cope="HTTPS_PROXY=127.0.0.1:20171 gh copilot explain"
 
-# this is the proxy for WSL2, only for WSL2
-host_ip=$(cat /etc/resolv.conf | grep "nameserver" | cut -f 2 -d " ")
-export HTTP_PROXY="http://$host_ip:7890"
-export HTTPS_PROXY="http://$host_ip:7890"
-export ALL_PROXY="http://$host_ip:7890"
+# tmux alias
+alias tw="tmux select-window -t"
+# alias curl
+# https://askubuntu.com/questions/299870/http-post-and-get-using-curl-in-linux
+alias cjson='curl -i -H "Accept: application/json" -H "Content-Type: application/json"'
 
-# Fix the vscode terminal sometimes cannot open new vscode issue.
-fix_wsl2_interop() {
-  for i in $(pstree -np -s $$ | grep -o -E '[0-9]+'); do
-    if [[ -e "/run/WSL/${i}_interop" ]]; then
-      export WSL_INTEROP=/run/WSL/${i}_interop
-    fi
-  done
-}
+alias format='clang-format --style=LLVM'
 
-export PATH=$PATH:/usr/local/go/bin
+# Java environment
+export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+export PATH=$PATH:$JAVA_HOME/bin
+
+# Alacritty completion
+# fpath+=${ZDOTDIR:-~}/.zsh_functions
+
+# ranger color issue
+export TERM=xterm-256color
