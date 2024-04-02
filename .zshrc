@@ -11,12 +11,6 @@ export ZSH="$HOME/.oh-my-zsh"
 # ZSH_THEME="robbyrussell"
 ZSH_THEME="eastwood"
 
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
 
@@ -106,6 +100,11 @@ alias c="clear"
 alias l='ls'
 alias grep='grep --color=auto'
 
+# alias r="yazi"
+alias p="pwd"
+alias l="eza -al --icons --group-directories-first"
+alias ll="eza -a --icons --group-directories-first"
+
 
 export PATH=$PATH:/usr/local/go/bin
 
@@ -127,7 +126,8 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-alias steam="GDK_SCALE=2 steam"
+# this is for X11 on steam, now on Wayland, and steam works poor on wayland
+# alias steam="GDK_SCALE=2 steam"
 alias cops="HTTPS_PROXY=127.0.0.1:20171 gh copilot suggest"
 alias cope="HTTPS_PROXY=127.0.0.1:20171 gh copilot explain"
 
@@ -139,6 +139,23 @@ alias cjson='curl -i -H "Accept: application/json" -H "Content-Type: application
 
 alias format='clang-format --style=LLVM'
 
+alias lg='lazygit'
+# VSCode blurry on Wayland, so use the chrome feature for that
+alias code='code --enable-features=UseOzonePlatform --ozone-platform=wayland'
+# Wireshark cant run w/o root priviledge
+alias ws='pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR wireshark'
+
+# A re function to repeat a command, zsh/bash
+re () {
+  if [ -z "$1" ]; then
+    echo "Usage: re <pattern>"
+    return 1
+  fi
+  for i in {1..10}; do
+    $1
+  done
+}
+
 # Java environment
 export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 export PATH=$PATH:$JAVA_HOME/bin
@@ -148,3 +165,16 @@ export PATH=$PATH:$JAVA_HOME/bin
 
 # ranger color issue
 export TERM=xterm-256color
+
+# use TMUX in alacritty
+# if [ "$TERM" = 'xterm-256color' ]; then
+if [ "$TERM" = 'alacritty' ]; then
+  tmux has -t hack &> /dev/null
+  if [ $? != 0 ]; then
+    tmux new -s hack
+  elif [ -z $TMUX ]; then
+    tmux attach -t hack
+  fi
+fi
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
