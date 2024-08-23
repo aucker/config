@@ -1,0 +1,452 @@
+// $HOME/Library/Application Support/Code/User/settings.json
+// $HOME/.config/Code/User/settings.json
+// $HOME/.vscode-server/data/Machine/settings.json
+// $HOME/AppData/Roaming/Code/User/settings.json
+{
+    "editor.fontSize": 16,
+    "terminal.integrated.fontSize": 16,
+    "files.autoSave": "afterDelay",
+    "editor.formatOnType": false,
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": true,
+    "editor.semanticHighlighting.enabled": true,
+    // the following configuration is for senmantic highlighting of rust
+    "editor.semanticTokenColorCustomizations": {
+        "enabled": true,
+        "rules": {
+            "*.mutable": {
+                "fontStyle": "", // underline is the default
+            }
+        }
+    },
+    "explorer.confirmDragAndDrop": false,
+    "security.workspace.trust.untrustedFiles": "open",
+    /*down------------------------------------latex-workshop------------------------------------*/
+    // below are the latex workshop settings
+    "latex-workshop.view.pdf.viewer": "browser",
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "workbench.editorAssociations": {
+        "*.pdf": "latex-workshop-pdf-hook"
+    },
+    "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+                "-xelatex",
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "%DOC%"
+            ]
+        }
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "latexmk 🔃",
+            "tools": [
+                "latexmk"
+            ]
+        },
+        {
+            "name": "latexmk (xelatex)",
+            "tools": [
+                "xelatexmk"
+            ]
+        },
+        {
+            "name": "pdflatex ➞ bibtex ➞ pdflatex × 2",
+            "tools": [
+                "pdflatex",
+                "bibtex",
+                "pdflatex",
+                "pdflatex"
+            ]
+        },
+        {
+            "name": "Compile Rnw files",
+            "tools": [
+                "rnw2tex",
+                "latexmk"
+            ]
+        },
+        {
+            "name": "Compile Jnw files",
+            "tools": [
+                "jnw2tex",
+                "latexmk"
+            ]
+        },
+        {
+            "name": "tectonic",
+            "tools": [
+                "tectonic"
+            ]
+        }
+    ],
+    "latex-workshop.intellisense.unimathsymbols.enabled": true,
+    "[latex]": {
+        "editor.formatOnPaste": false,
+        "editor.suggestSelection": "recentlyUsedByPrefix",
+        "editor.wordWrap": "on",
+    },
+    /*up------------------------------------latex-workshop------------------------------------*/
+    "editor.fontLigatures": true,
+    "remote.SSH.remotePlatform": {
+        "114.116.127.55": "linux",
+        "192.168.1.102": "linux",
+        "localhost": "linux"
+    },
+    // log config
+    "files.associations": {
+        "*.err": "log"
+    },
+    "logFileHighlighter.customPatterns": [
+        {
+            "pattern": "lookatme",
+            "foreground": "#d96ae7",
+            "fontStyle": "bold"
+        },
+        {
+            "pattern": "NETWORK",
+            "foreground": "#f4ad42",
+            "fontStyle": "bold"
+        },
+        {
+            "pattern": "leader",
+            "foreground": "#f4ad42",
+            "fontStyle": "bold"
+        },
+        {
+            "pattern": "candidate",
+            "foreground": "#395c12",
+            "fontStyle": "bold"
+        },
+        {
+            "pattern": "follower",
+            "foreground": "#1dc96a",
+            "fontStyle": "bold"
+        },
+        {
+            "pattern": "preMatch",
+            "foreground": "#1dc96a",
+            "fontStyle": "bold"
+        },
+        {
+            "pattern": "false",
+            "foreground": "#af1f1f",
+        },
+        {
+            "pattern": "false]",
+            "foreground": "#af1f1f",
+        },
+        {
+            "pattern": "REJ",
+            "foreground": "#af1f1f",
+        },
+        {
+            "pattern": "true",
+            "foreground": "#1dc96a",
+        },
+        {
+            "pattern": "ACK",
+            "foreground": "#1dc96a",
+        },
+        {
+            "pattern": "true]",
+            "foreground": "#1dc96a",
+        },
+        {
+            "pattern": "send",
+            "foreground": "#ebd40a",
+        },
+        {
+            "pattern": "receive",
+            "foreground": "#14e9cc",
+        },
+        {
+            "pattern": "AE",
+            "foreground": "#e4c40e",
+        },
+        {
+            "pattern": "RV",
+            "foreground": "#dd1742",
+        },
+    ],
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "log.error",
+                "settings": {
+                    "foreground": "#af1f1f",
+                    "fontStyle": "bold"
+                }
+            },
+            {
+                "scope": "log.warning",
+                "settings": {
+                    "foreground": "#f4ad42",
+                    "fontStyle": ""
+                }
+            },
+            {
+                "scope": "log.info",
+                "settings": {
+                    "foreground": "#1dc96a",
+                    "fontStyle": ""
+                }
+            }
+        ]
+    },
+    "editor.fontFamily": "Fira Code, Cascadia Code, Iosevka Extended",
+    "terminal.integrated.fontFamily": "Hack Nerd Font",
+    "window.titleBarStyle": "custom",
+    "editor.inlineSuggest.enabled": true,
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": true,
+        "markdown": true,
+        "scminput": false,
+        "yaml": true,
+        "rust": false,
+        // "cpp": true,
+        "cpp": false,
+        "c": false,
+        // "c": true,
+    },
+    "C_Cpp.clang_format_fallbackStyle": "Google",
+    /*----------------------------------vim------------------------------------*/
+    // below are the settings for vscodevim
+    "vim.highlightedyank.enable": true,
+    "vim.easymotion": true,
+    "vim.incsearch": true,
+    "vim.autoindent": true, // don't know what is autoindent
+    "vim.useSystemClipboard": true,
+    "vim.useCtrlKeys": true,
+    "vim.hlsearch": true,
+    "vim.surround": true, // surround text with quotes, parentheses, etc.
+    "vim.showMarksInGutter": true,
+    "vim.insertModeKeyBindings": [
+        {
+            "before": [
+                "j",
+                "j"
+            ],
+            "after": [
+                "<Esc>"
+            ]
+        }
+    ],
+    "vim.normalModeKeyBindings": [
+        // bind `;` to show the command pallette, and don't show the message on the status bar
+        {
+            "before": [
+                ";"
+            ],
+            "commands": [
+                "workbench.action.showCommands",
+            ],
+            "silent": true
+        },
+        // bind `;` to `:` in normal mode
+        // {
+        //     "before": [";"],
+        //     "after": [":"]
+        // },
+        // bind `ctrl+n` to trun off highlight search
+        {
+            "before": [
+                "<C-n>"
+            ],
+            "commands": [
+                ":nohl",
+            ]
+        },
+        // bind `<leader> + w` to save the file
+        {
+            "before": [
+                "<leader>",
+                "w"
+            ],
+            "commands": [
+                "workbench.action.files.save",
+            ]
+        },
+        // bind `<leader> + q` to close the file
+        {
+            "before": [
+                "<leader>",
+                "q"
+            ],
+            "commands": [
+                "workbench.action.closeActiveEditor",
+            ]
+        },
+        {
+            "before": [
+                "<leader>", "a"
+            ],
+            "commands": [
+                "workbench.view.explorer"
+            ]
+        },
+    ],
+    "vim.visualModeKeyBindings": [
+        //  bind `>` and `<` to indent and outdent lines 
+        {
+            "before": [
+                ">"
+            ],
+            "commands": [
+                "editor.action.indentLines"
+            ]
+        },
+        {
+            "before": [
+                "<"
+            ],
+            "commands": [
+                "editor.action.outdentLines"
+            ]
+        },
+    ],
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+            "before": [
+                "<leader>",
+                "d"
+            ],
+            "after": [
+                "d",
+                "d"
+            ]
+        },
+        {
+            "before": [
+                "<C-n>"
+            ],
+            "commands": [
+                ":nohl"
+            ]
+        },
+        {
+            "before": [
+                "K"
+            ],
+            "commands": [
+                "lineBreakInsert"
+            ],
+            "silent": true
+        }
+    ],
+    "vim.operatorPendingModeKeyBindings": [
+        // Bind L to $ and H to ^ in operator pending mode makes yL and dH work like y$ and d^ respectively:
+        {
+            "before": [
+                "L"
+            ],
+            "after": [
+                "$"
+            ]
+        },
+        {
+            "before": [
+                "H"
+            ],
+            "after": [
+                "^"
+            ]
+        }
+    ],
+    "vim.leader": "<space>",
+    "vim.handleKeys": {
+        "<C-a>": false,
+        "<C-f>": false
+    },
+    "vim.autoSwitchInputMethod.enable": true,
+    "vim.autoSwitchInputMethod.defaultIM": "1",
+    "vim.autoSwitchInputMethod.obtainIMCmd": "/usr/bin/fcitx5-remote",
+    "vim.autoSwitchInputMethod.switchIMCmd": "/usr/bin/fcitx5-remote -t {im}",
+    // the vim-airline settings
+    // "vim.statusBarColorControl": true,
+    // "vim.statusBarColors.normal": ["#8FBCBB", "#434C5E"],
+    // "vim.statusBarColors.insert": "#BF616A",
+    // "vim.statusBarColors.visual": "#B48EAD",
+    // "vim.statusBarColors.visualline": "#B48EAD",
+    // "vim.statusBarColors.visualblock": "#A3BE8C",
+    // "vim.statusBarColors.replace": "#D08770",
+    // "vim.statusBarColors.commandlineinprogress": "#007ACC",
+    // "vim.statusBarColors.searchinprogressmode": "#007ACC",
+    // "vim.statusBarColors.easymotionmode": "#007ACC",
+    // "vim.statusBarColors.easymotioninputmode": "#007ACC",
+    // "vim.statusBarColors.surroundinputmode": "#007ACC",
+    // "workbench.colorCustomizations": {
+    //     "statusBar.background": "#B48EAD",
+    //     "statusBar.noFolderBackground": "#B48EAD",
+    //     "statusBar.debuggingBackground": "#B48EAD",
+    //     "statusBar.foreground": "#434C5E",
+    //     "statusBar.debuggingForeground": "#434C5E"
+    // },
+    // above are the settings for vscodevim
+    /*-----------------------------------vim--------------------------------------*/
+    "cmake.configureOnOpen": true,
+    "go.toolsManagement.autoUpdate": true,
+    "debug.allowBreakpointsEverywhere": true,
+    "editor.wordWrap": "on",
+    "resmon.show.cpufreq": false,
+    "git.terminalAuthentication": false,
+    "resmon.show.battery": false,
+    "[cpp]": {
+    
+        "editor.defaultFormatter": "xaver.clang-format",
+        "editor.tabSize": 2,
+        "files.autoSave": "afterDelay"
+    },
+    "[c]": {
+        "editor.defaultFormatter": "xaver.clang-format",
+        "editor.tabSize": 2,
+    },
+    "[go]": {
+        "editor.formatOnSave": false,
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+    },
+    "[python]": {
+        "editor.formatOnType": true,
+        "editor.defaultFormatter": "ms-python.autopep8",
+    },
+    "open-in-browser.default": "chrome",
+    "cSpell.userWords": [
+        "annots",
+        "fitz",
+        "mywords",
+        "nullptr"
+    ],
+    "cmake.showOptionsMovedNotification": false,
+    "workbench.colorTheme": "Gruvbox Dark Medium",
+    // "python.defaultInterpreterPath": "/home/aucker/miniconda3/envs/torch/bin/python",
+    "firedbg.showWelcome": false,
+    "clang-format.fallbackStyle": "Google",
+    "workbench.iconTheme": "material-icon-theme",
+    "diffEditor.ignoreTrimWhitespace": false,
+    "haskell.manageHLS": "GHCup",
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "C_Cpp.default.cppStandard": "c++17",
+    "clangd.fallbackFlags": [
+        // "-std=c++17",
+        // "-std=c11"
+    ],
+    "github.copilot.editor.enableAutoCompletions": true,
+    "[java]": {
+        "editor.defaultFormatter": "xaver.clang-format",
+    },
+    "cmake.pinnedCommands": [
+        "workbench.action.tasks.configureTaskRunner",
+        "workbench.action.tasks.runTask"
+    ],
+    "java.autobuild.enabled": false,
+    "java.format.enabled": false,
+    "java.progressReports.enabled": false,
+    "java.trace.server":"verbose",
+}
