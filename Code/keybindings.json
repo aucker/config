@@ -4,65 +4,42 @@
 // Place your key bindings in this file to override the defaults
 [
     {
-        "key": "ctrl+j",
-        "command": "selectNextSuggestion",
-        "when": "suggestWidgetVisible"
+        "key": "ctrl+n",
+        "command": "-workbench.action.files.newUntitledFile"
     },
     {
-        "key": "ctrl+k",
-        "command": "selectPrevSuggestion",
-        "when": "suggestWidgetVisible"
+        "key": "ctrl+n",
+        "command": "cursorDown",
+        "when": "textInputFocus || panelFocus"
     },
     {
-        "key": "ctrl+j",
+        "key": "ctrl+p",
+        "command": "cursorUp",
+        "when": "textInputFocus || panelFocus"
+    },
+
+    // quick open ctrl+shift+p
+    {
+        "key": "ctrl+n",
         "command": "workbench.action.quickOpenSelectNext",
         "when": "inQuickOpen"
     },
     {
-        "key": "ctrl+k",
+        "key": "ctrl+p",
         "command": "workbench.action.quickOpenSelectPrevious",
         "when": "inQuickOpen"
     },
 
-    // switch between split windows with `ctrl + j/k`
-    {   "key": "ctrl+j",
-        "command": "workbench.action.focusNextGroup",
-        "when": "multipleEditorGroups"
+    // suggest next and prev
+    {
+        "key": "ctrl+n",
+        "command": "selectNextSuggestion",
+        "when": "suggestWidgetVisible"
     },
-    {   "key": "ctrl+k",
-        "command": "workbench.action.focusPreviousGroup",
-        "when": "multipleEditorGroups"
-    },
-
-    // switch between terminals with `ctrl + shift + j/k`
-    {   "key": "ctrl+shift+j",
-        "command": "workbench.action.terminal.focusNext",
-        "when": "terminalFocus" // tricky here, only k works when terminal is not focused.
-    },
-    {   "key": "ctrl+shift+k",
-        "command": "workbench.action.terminal.focusPrevious",
-        "when": "terminalFocus"
-    },
-
-    // split terminal
-    {   "key": "ctrl+shift+r", // split right
-        "command": "workbench.action.terminal.split",
-        "when": "terminalFocus"
-    },
-    // unspilt terminal
-    {   "key": "ctrl+shift+u",
-        "command": "workbench.action.terminal.kill",
-        "when": "terminalFocus"
-    },
-
-    // switch between terminals within a splitted tab with `ctrl + j/k`
-    {   "key": "ctrl+j",
-        "command": "workbench.action.terminal.focusNextPane",
-        "when": "terminalFocus"
-    },
-    {   "key": "ctrl+k",
-        "command": "workbench.action.terminal.focusPreviousPane",
-        "when": "terminalFocus"
+    {
+        "key": "ctrl+p",
+        "command": "selectPrevSuggestion",
+        "when": "suggestWidgetVisible"
     },
 
     // Toggle between terminal and editor focus
