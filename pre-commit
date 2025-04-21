@@ -1,0 +1,70 @@
+#!/bin/sh
+#
+# Pre-commit hook that runs clang-format on staged C/C++ files,
+# skipping files in specified ignored folders.
+#
+
+# --- Configuration ---
+# Find clang-format
+CLANG_FORMAT_CMD=$(command -v clang-format)
+# CLANG_FORMAT_CMD="./util/clang-format/clang-format.exe"
+
+if [ -z "$CLANG_FORMAT_CMD" ]; then
+    echo "Error: clang-format command not found." >&2
+    echo "Please install clang-format or adjust the path in the pre-commit hook." >&2
+    exit 1
+fi
+
+# --- Ignore Folders Configuration ---
+# Add folders you want to ignore here, separated by spaces.
+# IMPORTANT:
+#   - Paths should be relative to the repository root (where .git is).
+#   - Paths MUST end with a forward slash '/' to correctly match folders.
+# Example: IGNORE_FOLDERS="vendor/ third_party/libs/ build/generated/"
+IGNORE_FOLDERS="vendor/ third_party/libs/" # <-- CONFIGURE YOUR IGNORED FOLDERS HERE
+
+echo "Running clang-format on staged C/C++ files..."
+if [ -n "$IGNORE_FOLDERS" ]; then
+    echo "Ignoring files in folders: $IGNORE_FOLDERS"
+fi
+
+# Get list of staged C/C++ files, excluding deleted ones
+git diff --cached --name-only --diff-filter=ACM | grep -E '\.(c|h)$' | while IFS= read -r FILE; do
+    # --- Check against ignored folders ---
+    IGNORE_THIS_FILE=false
+    # Loop through each pattern defined in IGNORE_FOLDERS
+    # Shell automatically splits IGNORE_FOLDERS string by spaces here
+    for pattern in $IGNORE_FOLDERS; do
+         # Use 'case' for POSIX-compliant prefix matching:
+         # Does $FILE start with $pattern?
+         case "$FILE" in
+             "$pattern"*) # Note the '*' wildcard after the pattern
+                 IGNORE_THIS_FILE=true
+                 echo "Ignoring $FILE (matches pattern '$pattern')"
+                 break # Found a match, no need to check other ignore patterns for this file
+                 ;;
+         esac
+    done
+
+    # If the flag is true, skip the rest of the loop for this file
+    if $IGNORE_THIS_FILE; then
+        continue # Proceeds to the next iteration of the 'while' loop
+    fi
+    # --- End Ignore Check ---
+
+    # Proceed with formatting if the file exists and was not ignored
+    if [ -f "$FILE" ]; then
+        echo "Formatting $FILE..."
+        # Run clang-format in-place
+        "$CLANG_FORMAT_CMD" -i "$FILE"
+
+        # Re-stage the file if clang-format modified it
+        git add "$FILE"
+    else
+         echo "Warning: Staged file '$FILE' not found in working directory. Skipping format." >&2
+    fi
+done
+
+echo "clang-format check finished."
+
+exit 0
