@@ -25,7 +25,7 @@ fish_add_path $HOME/.cargo/bin
 fish_add_path $HOME/go/bin
 
 # Quotes are important here because the path contains spaces
-fish_add_path "/mnt/c/Users/asus/AppData/Local/Programs/Microsoft VS Code/bin"
+fish_add_path "/mnt/c/Users/aucker/AppData/Local/Programs/Microsoft VS Code/bin"
 
 # Add Clang/LLVM toolchain bin directory
 fish_add_path $HOME/toolchains/clang+llvm-18.1.8-x86_64-linux-gnu-ubuntu-18.04/bin
@@ -353,3 +353,5 @@ function fish_greeting
 
 	set_color normal
 end
+
+zoxide init fish | source
