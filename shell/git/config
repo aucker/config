@@ -20,7 +20,8 @@
 [alias]
 	c = commit
 	s = status
-	st = status lg = log --oneline
+	st = status
+	lg = log --oneline
 	last = log -1 HEAD
 	cl = log -p -- ':(exclude)Cargo.lock'
 	f = push --force-with-lease
