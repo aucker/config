@@ -49,12 +49,12 @@ vim.opt.wildmode = 'list:longest'
 -- when opening a file with a command (like :e),
 -- don't suggest files like there:
 vim.opt.wildignore = '.hg,.svn,*~,*.png,*.jpg,*.gif,*.min.js,*.swp,*.o,vendor,dist,_site'
+
 -- tabs: go big or go home: NO!
-vim.opt.shiftwidth = 2
-vim.opt.softtabstop = 2
-vim.opt.tabstop = 2
-vim.opt.expandtab = false
-vim.opt.smartindent = true
+vim.opt.expandtab = true  -- Use spaces rather tabs: modern C++/Rust
+vim.opt.shiftwidth = 4    -- Number of spaces for an indent level
+vim.opt.tabstop = 4       -- Number of spaces a \t character *looks like*
+vim.opt.softtabstop = 4   -- Number of spaces Tab key inserts/deletes
 
 -- case-insensitive search/replace
 vim.opt.ignorecase = true
@@ -78,9 +78,8 @@ vim.api.nvim_create_autocmd('Filetype', { pattern = 'rust', command = 'set color
 -- show more hidden characters
 -- also, show tabs nicer
 vim.opt.list = true
--- vim.opt.listchars = 'tab:^ ,nbsp:¬,extends:»,precedes:«,trail:•'
+vim.opt.listchars = 'tab:^ ,nbsp:¬,extends:»,precedes:«,trail:•'
 -- vim.opt.listchars = 'tab:  ,nbsp:¬,extends:»,precedes:«,trail:•'
-vim.opt.listchars = "tab:→ ,nbsp:¬,extends:»,precedes:«,trail:•"
 -- vim.opt.listchars = 'tab:| ,nbsp:¬,extends:»,precedes:«,trail:•'
 
 -- Use system clipboard in nvim
