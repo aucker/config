@@ -51,7 +51,7 @@ vim.opt.wildmode = 'list:longest'
 vim.opt.wildignore = '.hg,.svn,*~,*.png,*.jpg,*.gif,*.min.js,*.swp,*.o,vendor,dist,_site'
 
 -- tabs: go big or go home: NO!
-vim.opt.expandtab = true  -- Use spaces rather tabs: modern C++/Rust
+vim.opt.expandtab = false -- I am back tabs, use formatter do spaces for me
 vim.opt.shiftwidth = 4    -- Number of spaces for an indent level
 vim.opt.tabstop = 4       -- Number of spaces a \t character *looks like*
 vim.opt.softtabstop = 4   -- Number of spaces Tab key inserts/deletes

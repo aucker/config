@@ -14,13 +14,13 @@
 [core]
 	autocrlf = input
 	safecrlf = true
+	excludesFile = ~/.config/git/ignore
 [merge]
 	tool = nvim -d
 [alias]
 	c = commit
 	s = status
-	st = status
-	lg = log --oneline
+	st = status lg = log --oneline
 	last = log -1 HEAD
 	cl = log -p -- ':(exclude)Cargo.lock'
 	f = push --force-with-lease
@@ -57,3 +57,4 @@
 	process = git-lfs filter-process
 [commit]
 	gpgsign = true
+
