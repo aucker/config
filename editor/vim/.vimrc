@@ -168,33 +168,6 @@ map ` ~
 " Auto change directory to current dir
 autocmd BufEnter * silent! lcd %:p:h
 
-" Compile function
-" map r :call CompileRunGcc()<CR>
-" func! CompileRunGcc()
-"   exec "w"
-"   if &filetype == 'c'
-"     exec "!g++ % -o %<"
-"     exec "!./%<"
-"   elseif &filetype == 'cpp'
-"     exec "!g++ % -o %<"
-"     exec "!time ./%<"
-"   elseif &filetype == 'java'
-"     exec "!javac %"
-"     exec "!time java %<"
-"   elseif &filetype == 'sh'
-"     :!time bash %
-"   elseif &filetype == 'python'
-"     silent! exec "!clear"
-"     exec "!time python3 %"
-"   elseif &filetype == 'html'
-"     exec "!firefox % &"
-"   elseif &filetype == 'markdown'
-"     exec "MarkdownPreview"
-"   elseif &filetype == 'vimwiki'
-"     exec "MarkdownPreview"
-"   endif
-" endfunc
-
 "The plugs manager
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -229,4 +202,3 @@ call plug#end()
 
 " open NERDTree with nt
 map nt :NERDTreeToggle<CR>
-

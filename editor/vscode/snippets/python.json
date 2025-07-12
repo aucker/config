@@ -1,0 +1,62 @@
+{
+	// Place your snippets for python here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"My code Test": {
+		"prefix": "test",
+		"body": [
+			"import unittest",
+			"",
+			"class Test${1:Name}(unittest.TestCase):",
+			"",
+			"\tdef test_${2:method_name}(self):",
+			"\t\t$3",
+			"",
+			"if __name__ == '__main__':",
+			"\tunittest.main()"
+		],
+		"description": "Create a test class"
+	},
+	"My leetcode test": {
+		"prefix": "ltest",
+		"body": [
+			"from typing import List",
+			"import collections",
+			"import itertools",
+			"import functools",
+			"import math",
+			"import string",
+			"import random",
+			"import bisect",
+			"import re",
+			"import operator",
+			"import heapq",
+			"import queue",
+			"",		
+			"from queue import PriorityQueue",
+			"from itertools import combinations, permutations",
+			"from functools import lru_cache",
+			"from collections import defaultdict",
+			"from collections import OrderedDict",
+			"from collections import deque",
+			"from collections import Counter",
+			"",		
+			"class Solution:",
+
+			"\tdef ${1:method_name}(self, ${2:input}) -> ${3:return_type}:",
+			
+			"",
+			"print(Solution().maximumBeauty(items=[[1, 2], [3, 2], [2, 4], [5, 6], [3, 5]], queries=[1, 2, 3, 4, 5, 6])) # [2, 4, 5, 5, 6, 6]"
+		]
+	},
+}

@@ -1,0 +1,26 @@
+[env]
+TERM = "xterm-256color"
+
+[window]
+opacity = 0.85
+blur = true
+padding.x = 10
+padding.y = 10
+
+decorations = "Full"
+decorations_theme_variant = "Dark" # "Dark"
+
+[font]
+size = 17
+# normal = { family = "Maple Mono NF", style = "Regular" }
+# normal = { family = "SF Mono", style = "Regular" }
+normal = { family = "FiraCode Nerd Font Mono", style = "Regular" }
+# bold.family = "Maple Mono NF"
+# italic.family = "Maple Mono NF"
+# bold_italic.family = "Maple Mono NF"
+
+[general]
+import = [
+	"~/.config/alacritty/themes/themes/alacritty_0_12.toml"
+]
+

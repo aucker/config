@@ -1,0 +1,236 @@
+{
+    "editor.fontSize": 15,
+    "terminal.integrated.fontSize": 14,
+    "files.autoSave": "afterDelay",
+    "editor.renderWhitespace": "all",
+    "editor.rulers": [80, 120],
+    "editor.semanticHighlighting.enabled": true,
+    // the following configuration is for senmantic highlighting of rust
+    // "editor.semanticTokenColorCustomizations": {
+    //     "enabled": true,
+    //     "rules": {
+    //         "*.mutable": {
+    //             "fontStyle": "", // underline is the default
+    //         }
+    //     }
+    // },
+    "diffEditor.ignoreTrimWhitespace": false,
+    "explorer.confirmDragAndDrop": false,
+    "security.workspace.trust.untrustedFiles": "open",
+
+    // log config
+    "files.associations": {
+        "*.err": "log"
+    },
+
+    // "editor.tokenColorCustomizations": {
+    //     "textMateRules": [
+    //         {
+    //             "scope": "log.error",
+    //             "settings": {
+    //                 "foreground": "#af1f1f",
+    //                 "fontStyle": "bold"
+    //             }
+    //         },
+    //         {
+    //             "scope": "log.warning",
+    //             "settings": {
+    //                 "foreground": "#f4ad42",
+    //                 "fontStyle": ""
+    //             }
+    //         },
+    //         {
+    //             "scope": "log.info",
+    //             "settings": {
+    //                 "foreground": "#1dc96a",
+    //                 "fontStyle": ""
+    //             }
+    //         }
+    //     ]
+    // },
+    "editor.fontFamily": "Fira Code, Maple Mono NF, Zed Plex Mono, SF Mono, Cascadia Code",
+    "terminal.integrated.fontFamily": "NotoSansM Nerd Font",
+    "editor.fontLigatures": true,
+    "editor.inlineSuggest.enabled": true,
+    "C_Cpp.intelliSenseEngine": "disabled",
+    // "C_Cpp.clang_format_fallbackStyle": "Google",
+    // "C_Cpp.default.cppStandard": "c++17",
+    // "clangd.fallbackFlags": ["-std=c++17"],
+    /*----------------------------------vim------------------------------------*/
+    // below are the settings for vscodevim
+    "vim.highlightedyank.enable": true,
+    "vim.easymotion": true,
+    "vim.incsearch": true,
+    "vim.autoindent": true, // don't know what is autoindent
+    "vim.useSystemClipboard": true,
+    "vim.useCtrlKeys": true,
+    "vim.hlsearch": true,
+    "vim.surround": true, // surround text with quotes, parentheses, etc.
+    "vim.insertModeKeyBindings": [
+        {
+            "before": [
+                "j",
+                "j"
+            ],
+            "after": [
+                "<Esc>"
+            ]
+        }
+    ],
+    "vim.normalModeKeyBindings": [
+        // bind `;` to show the command pallette, and don't show the message on the status bar
+        {
+            "before": [
+                ";"
+            ],
+            "commands": [
+                // "workbench.action.showCommands",
+                "workbench.action.quickOpen"
+            ],
+            "silent": true
+        },
+        // bind `;` to `:` in normal mode
+        // {
+        //     "before": [";"],
+        //     "after": [":"]
+        // },
+        // bind `ctrl+h` to trun off highlight search
+        {
+            "before": [
+                "<C-h>"
+            ],
+            "commands": [
+                ":nohl"
+            ]
+        },
+        // bind `<leader>w` to save the file
+        {
+            "before": [
+                "<leader>",
+                "w"
+            ],
+            "commands": [
+                "workbench.action.files.save"
+            ]
+        },
+        // bind `<leader>q` to close the file
+        {
+            "before": [
+                "<leader>",
+                "q"
+            ],
+            "commands": [
+                "workbench.action.closeActiveEditor"
+            ]
+        }
+    ],
+    "vim.visualModeKeyBindings": [
+        //  bind `>` and `<` to indent and outdent lines 
+        {
+            "before": [
+                ">"
+            ],
+            "commands": [
+                "editor.action.indentLines"
+            ]
+        },
+        {
+            "before": [
+                "<"
+            ],
+            "commands": [
+                "editor.action.outdentLines"
+            ]
+        }
+    ],
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+            "before": [
+                "<leader>",
+                "d"
+            ],
+            "after": [
+                "d",
+                "d"
+            ]
+        },
+        {
+            "before": [
+                "<C-h>"
+            ],
+            "commands": [
+                ":nohl"
+            ]
+        },
+        {
+            "before": [
+                "K"
+            ],
+            "commands": [
+                "lineBreakInsert"
+            ],
+            "silent": true
+        }
+    ],
+    "vim.operatorPendingModeKeyBindings": [
+        // Bind L to $ and H to ^ in operator pending mode makes yL and dH work like y$ and d^ respectively:
+        {
+            "before": [
+                "L"
+            ],
+            "after": [
+                "$"
+            ]
+        },
+        {
+            "before": [
+                "H"
+            ],
+            "after": [
+                "^"
+            ]
+        }
+    ],
+    "vim.leader": "<space>",
+    "vim.handleKeys": {
+        "<C-a>": false,
+        "<C-f>": false
+    },
+    "vim.autoSwitchInputMethod.enable": true,
+    "vim.autoSwitchInputMethod.defaultIM": "com.apple.keylayout.US",
+    "vim.autoSwitchInputMethod.obtainIMCmd": "/usr/local/bin/im-select",
+    "vim.autoSwitchInputMethod.switchIMCmd": "/usr/local/bin/im-select {im}",
+    // Used on Linux if available, Linux's IM sucks
+    // "vim.autoSwitchInputMethod.defaultIM": "1",
+    // "vim.autoSwitchInputMethod.obtainIMCmd": "/usr/bin/fcitx5-remote",
+    // "vim.autoSwitchInputMethod.switchIMCmd": "/usr/bin/fcitx5-remote -t {im}",
+
+    "cmake.configureOnOpen": true,
+    "go.toolsManagement.autoUpdate": true,
+    "debug.allowBreakpointsEverywhere": true,
+    "editor.wordWrap": "on",
+    "git.terminalAuthentication": false,
+    "workbench.iconTheme": "material-icon-theme",
+    "open-in-browser.default": "chrome",
+    "cmake.pinnedCommands": [
+        "workbench.action.tasks.configureTaskRunner",
+        "workbench.action.tasks.runTask"
+    ],
+    "workbench.colorTheme": "Gruvbox Dark Medium",
+    "[typst]": {
+        "editor.wordSeparators": "`~!@#$%^&*()=+[{]}\\|;:'\",.<>/?"
+    },
+    "[typst-code]": {
+        "editor.wordSeparators": "`~!@#$%^&*()=+[{]}\\|;:'\",.<>/?"
+    },
+    "[c]": {
+        "editor.defaultFormatter": "xaver.clang-format"
+    },
+    "[cpp]": {
+        "editor.defaultFormatter": "xaver.clang-format",
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2
+    },
+    "window.zoomLevel": -1,
+    "python.defaultInterpreterPath": "/opt/homebrew/bin/python3"
+}
