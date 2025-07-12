@@ -1,7 +1,4 @@
-// $HOME/.config/Code/User/keybindings.json
-// $HOME/Library/Application Support/Code/User/keybindings.json
-// $HOME/AppData/Roaming/Code/User/keybindings.json
-// Place your key bindings in this file to override the defaults
+// Windows doesn't have emacs keybindings, add little support for that
 [
     {
         "key": "ctrl+n",

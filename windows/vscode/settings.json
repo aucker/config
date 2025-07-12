@@ -1,7 +1,3 @@
-// $HOME/Library/Application Support/Code/User/settings.json
-// $HOME/.config/Code/User/settings.json
-// $HOME/.vscode-server/data/Machine/settings.json
-// $HOME/AppData/Roaming/Code/User/settings.json
 {
     "editor.fontSize": 16,
     "terminal.integrated.fontSize": 16,
@@ -20,11 +16,6 @@
         }
     },
     "diffEditor.ignoreTrimWhitespace": true,
-    "remote.SSH.defaultExtensions": [
-        "gitpod.gitpod-remote-ssh"
-    ],
-    // "remote.SSH.configFile": "/var/folders/76/8t82jcvs4vl5qclf39p7tw4r0000gn/T/gitpod_ssh_config-52328-drOQwyzpvA6d",
-    "remote.SSH.configFile": "/Users/aucker_an/.ssh/.remote-ssh",
     "explorer.confirmDragAndDrop": false,
     "security.workspace.trust.untrustedFiles": "open",
     "editor.fontLigatures": true,
@@ -32,78 +23,6 @@
     "files.associations": {
         "*.err": "log"
     },
-    "logFileHighlighter.customPatterns": [
-        {
-            "pattern": "lookatme",
-            "foreground": "#d96ae7",
-            "fontStyle": "bold"
-        },
-        {
-            "pattern": "NETWORK",
-            "foreground": "#f4ad42",
-            "fontStyle": "bold"
-        },
-        {
-            "pattern": "leader",
-            "foreground": "#f4ad42",
-            "fontStyle": "bold"
-        },
-        {
-            "pattern": "candidate",
-            "foreground": "#395c12",
-            "fontStyle": "bold"
-        },
-        {
-            "pattern": "follower",
-            "foreground": "#1dc96a",
-            "fontStyle": "bold"
-        },
-        {
-            "pattern": "preMatch",
-            "foreground": "#1dc96a",
-            "fontStyle": "bold"
-        },
-        {
-            "pattern": "false",
-            "foreground": "#af1f1f",
-        },
-        {
-            "pattern": "false]",
-            "foreground": "#af1f1f",
-        },
-        {
-            "pattern": "REJ",
-            "foreground": "#af1f1f",
-        },
-        {
-            "pattern": "true",
-            "foreground": "#1dc96a",
-        },
-        {
-            "pattern": "ACK",
-            "foreground": "#1dc96a",
-        },
-        {
-            "pattern": "true]",
-            "foreground": "#1dc96a",
-        },
-        {
-            "pattern": "send",
-            "foreground": "#ebd40a",
-        },
-        {
-            "pattern": "receive",
-            "foreground": "#14e9cc",
-        },
-        {
-            "pattern": "AE",
-            "foreground": "#e4c40e",
-        },
-        {
-            "pattern": "RV",
-            "foreground": "#dd1742",
-        },
-    ],
     "editor.tokenColorCustomizations": {
         "textMateRules": [
             {
@@ -132,16 +51,6 @@
     "editor.fontFamily": "Fira Code, Cascadia Code",
     "terminal.integrated.fontFamily": "Hack Nerd Font",
     "editor.inlineSuggest.enabled": true,
-    "github.copilot.enable": {
-        "*": true,
-        "plaintext": true,
-        "markdown": false,
-        "scminput": false,
-        "yaml": true,
-        "rust": false,
-        "cpp": true,
-        "c": true
-    },
     "C_Cpp.clang_format_fallbackStyle": "Google",
     /*----------------------------------vim------------------------------------*/
     // below are the settings for vscodevim
@@ -171,7 +80,8 @@
                 ";"
             ],
             "commands": [
-                "workbench.action.showCommands",
+                // "workbench.action.showCommands",
+                "workbench.action.quickOpen"
             ],
             "silent": true
         },
@@ -180,13 +90,13 @@
         //     "before": [";"],
         //     "after": [":"]
         // },
-        // bind `ctrl+n` to trun off highlight search
+        // bind `ctrl+h` to trun off highlight search
         {
             "before": [
                 "<C-h>"
             ],
             "commands": [
-                ":nohl",
+                ":nohl"
             ]
         },
         // bind `<leader>w` to save the file
@@ -196,7 +106,7 @@
                 "w"
             ],
             "commands": [
-                "workbench.action.files.save",
+                "workbench.action.files.save"
             ]
         },
         // bind `<leader>c` to close the file
