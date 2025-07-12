@@ -135,7 +135,7 @@ vim.keymap.set('n', '<leader>p', '<cmd>read !pbpaste<cr>')
 vim.keymap.set('n', '<leader>c', '<cmd>w !pbcopy<cr><cr>')
 -- <leader><leader> toggles between buffers
 vim.keymap.set('n', '<leader><leader>', '<c-^>')
--- <leader>, shows/hides hidden characters
+-- <leader>, shows/hides hidden characters, this works with list chars
 vim.keymap.set('n', '<leader>,', ':set invlist<cr>')
 -- always center search results
 vim.keymap.set('n', 'n', 'nzz', { silent = true })
