@@ -2,6 +2,9 @@
 vim.keymap.set("n", "<Space>", "<Nop>", { silent = true })
 vim.g.mapleader = " "
 
+-- It works for me
+vim.o.termguicolors = true
+
 -------------------------------------------------------------------------------
 --
 -- preferences
@@ -46,11 +49,13 @@ vim.opt.wildmode = 'list:longest'
 -- when opening a file with a command (like :e),
 -- don't suggest files like there:
 vim.opt.wildignore = '.hg,.svn,*~,*.png,*.jpg,*.gif,*.min.js,*.swp,*.o,vendor,dist,_site'
--- tabs: go big or go home
+-- tabs: go big or go home: NO!
 vim.opt.shiftwidth = 2
 vim.opt.softtabstop = 2
 vim.opt.tabstop = 2
 vim.opt.expandtab = false
+vim.opt.smartindent = true
+
 -- case-insensitive search/replace
 vim.opt.ignorecase = true
 -- unless uppercase in search term
@@ -74,8 +79,11 @@ vim.api.nvim_create_autocmd('Filetype', { pattern = 'rust', command = 'set color
 -- also, show tabs nicer
 vim.opt.list = true
 -- vim.opt.listchars = 'tab:^ ,nbsp:¬,extends:»,precedes:«,trail:•'
-vim.opt.listchars = 'tab:  ,nbsp:¬,extends:»,precedes:«,trail:•'
+-- vim.opt.listchars = 'tab:  ,nbsp:¬,extends:»,precedes:«,trail:•'
+vim.opt.listchars = "tab:→ ,nbsp:¬,extends:»,precedes:«,trail:•"
 -- vim.opt.listchars = 'tab:| ,nbsp:¬,extends:»,precedes:«,trail:•'
+
+-- Use system clipboard in nvim
 vim.opt.clipboard = "unnamed"
 
 -------------------------------------------------------------------------------
