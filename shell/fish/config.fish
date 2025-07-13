@@ -1,29 +1,85 @@
+# =============================================================================
+# ENVIRONMENT VARIABLES
+# =============================================================================
+
+# Set Homebrew PATH (must be early in config)
+set -gx PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
+
+# Set Python PATH
+set -gx PATH /Users/aucker/Library/Python/3.13/bin $PATH
+
+# Set default editor
+set -gx EDITOR nvim
+
+# FZF configuration
+set -gx FZF_DEFAULT_COMMAND 'fd --type file --follow'
+set -gx FZF_CTRL_T_COMMAND 'fd --type file --follow'
+set -gx FZF_DEFAULT_OPTS '--height 20%'
+
+# =============================================================================
+# ABBREVIATIONS
+# =============================================================================
+
+# System shortcuts
+abbr -a yr 'cal -y'
+abbr -a e nvim
+abbr -a vi nvim
+abbr -a vimdiff 'nvim -d'
+
+# Development shortcuts
+abbr -a c cargo
+abbr -a ct 'cargo t'
+abbr -a m make
+
+# Git shortcuts
+abbr -a g git
+abbr -a gc 'git checkout'
+abbr -a ga 'git add -p'
+abbr -a gah 'git stash; and git pull --rebase; and git stash pop'
+abbr -a pr 'gh pr create -t (git show -s --format=%s HEAD) -b (git show -s --format=%B HEAD | tail -n+3)'
+
+# AWS shortcuts
+abbr -a amz 'env AWS_SECRET_ACCESS_KEY=(pass www/aws-secret-key | head -n1)'
+abbr -a ais "aws ec2 describe-instances | jq '.Reservations[] | .Instances[] | {iid: .InstanceId, type: .InstanceType, key:.KeyName, state:.State.Name, host:.PublicDnsName}'"
+
+# Keybase shortcuts
+abbr -a ks 'keybase chat send'
+abbr -a kr 'keybase chat read'
+abbr -a kl 'keybase chat list'
+
+# =============================================================================
+# DYNAMIC ABBREVIATIONS (conditional on available tools)
+# =============================================================================
+
+# Better ls with eza if available
+if command -v eza &>/dev/null
+    abbr -a l 'eza'
+    abbr -a ls 'eza'
+    abbr -a ll 'eza -l'
+    abbr -a lll 'eza -la'
+else
+    abbr -a l 'ls'
+    abbr -a ll 'ls -l'
+    abbr -a lll 'ls -la'
+end
+
+# =============================================================================
+# KEY BINDINGS
+# =============================================================================
+
 function fzf_history
     history | fzf | read -l line
-    commandline $line
+    and commandline $line
 end
 
 bind \cr fzf_history
 
-abbr -a yr 'cal -y'
-abbr -a c cargo
-abbr -a e nvim
-abbr -a vi nvim
-abbr -a m make
-abbr -a g git
-abbr -a gc 'git checkout'
-abbr -a ga 'git add -p'
-abbr -a vimdiff 'nvim -d'
-abbr -a ct 'cargo t'
-abbr -a amz 'env AWS_SECRET_ACCESS_KEY=(pass www/aws-secret-key | head -n1)'
-abbr -a ais "aws ec2 describe-instances | jq '.Reservations[] | .Instances[] | {iid: .InstanceId, type: .InstanceType, key:.KeyName, state:.State.Name, host:.PublicDnsName}'"
-abbr -a gah 'git stash; and git pull --rebase; and git stash pop'
-abbr -a ks 'keybase chat send'
-abbr -a kr 'keybase chat read'
-abbr -a kl 'keybase chat list'
-abbr -a pr 'gh pr create -t (git show -s --format=%s HEAD) -b (git show -s --format=%B HEAD | tail -n+3)'
-complete --command aurman --wraps pacman
-complete --command paru --wraps pacman
+function fish_user_key_bindings
+    bind \cz 'fg>/dev/null ^/dev/null'
+    if functions -q fzf_key_bindings
+        fzf_key_bindings
+    end
+end
 
 if status --is-interactive
 	if test -d ~/dev/others/base16/templates/fish-shell
@@ -54,6 +110,9 @@ end
 if test -f /usr/share/autojump/autojump.fish;
 	source /usr/share/autojump/autojump.fish;
 end
+
+# Set Homebrew PATH
+set -gx PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
 
 #Set PDM env
 set -gx PATH /Users/aucker/Library/Python/3.13/bin $PATH
