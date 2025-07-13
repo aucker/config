@@ -33,7 +33,7 @@ vim.opt.wrap = false
 -- always draw sign column. prevents buffer moving when adding/deleting sign
 vim.opt.signcolumn = 'yes'
 -- sweet sweet relative line numbers
-vim.opt.relativenumber = false
+vim.opt.relativenumber = true
 -- and show the absolute line number for the current line
 vim.opt.number = true
 -- keep current content top + left when splitting
