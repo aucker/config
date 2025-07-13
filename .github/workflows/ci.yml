@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    name: Shellcheck
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Shellcheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: './shell'
+          additional_files: 'stow-posix.sh stow-install.sh stow-status.sh stow-quick-status.sh stow-adopt.sh'
+
+  shfmt:
+    runs-on: ubuntu-latest
+    name: Shell Format Check
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install shfmt
+        run: |
+          curl -L https://github.com/mvdan/sh/releases/download/v3.7.0/shfmt_v3.7.0_linux_amd64 -o shfmt
+          chmod +x shfmt
+          sudo mv shfmt /usr/local/bin/
+      - name: Check shell script formatting
+        run: |
+          shfmt -d -i 4 -ci stow-posix.sh stow-install.sh stow-status.sh stow-quick-status.sh stow-adopt.sh
+          find shell -name "*.sh" -exec shfmt -d -i 4 -ci {} \;
+
+  test:
+    runs-on: ubuntu-latest
+    name: Basic Tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y stow
+      - name: Test stow-posix.sh help
+        run: ./stow-posix.sh --help
+      - name: Test stow-posix.sh status
+        run: ./stow-posix.sh status
+      - name: Test dry-run installation
+        run: ./stow-posix.sh --dry-run install shell/shell-sample

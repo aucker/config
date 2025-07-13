@@ -1,17 +1,40 @@
 #!/bin/sh
-
 # stow-posix.sh - POSIX-compliant dotfiles symlink manager
-# A lightweight alternative to GNU Stow for managing configuration files
+# Safety settings: exit on error, exit on undefined variables
+set -eu
 
-# set -e removed to allow proper error handling of stow conflicts
+# Trap to restore settings on exit/error
+cleanup() {
+    exit_code=$?
+    set +eu 2>/dev/null || true
+    exit $exit_code
+}
+trap cleanup EXIT INT TERM
+
+# OS detection for platform-specific behavior (only when needed)
+detect_os() {
+    case "$(uname -s)" in
+        Darwin) echo "darwin" ;;
+        Linux) echo "linux" ;;
+        *) echo "unknown" ;;
+    esac
+}
+
+# Portable readlink (handles BSD/GNU differences)
+get_link_target() {
+    local link="$1"
+    if command -v readlink >/dev/null 2>&1; then
+        readlink "$link" 2>/dev/null || echo ""
+    else
+        ls -l "$link" 2>/dev/null | sed -n 's/.* -> //p' || echo ""
+    fi
+}
 
 # Default configuration
 DEFAULT_TARGET="${HOME}"
 DRY_RUN=false
 VERBOSE=false
 TARGET="${DEFAULT_TARGET}"
-
-# Script information
 SCRIPT_NAME="$(basename "$0")"
 VERSION="1.0.0"
 
@@ -733,7 +756,7 @@ check_package_status() {
                 local rel_path="${file#$package_path/}"
                 local target_path="$TARGET/$rel_path"
                 if [ -L "$target_path" ]; then
-                    local link_target=$(readlink "$target_path")
+                    local link_target=$(get_link_target "$target_path")
                     if echo "$link_target" | grep -q "$package_path"; then
                         has_some_links=true
                         break
@@ -780,7 +803,7 @@ check_package_status_readlink() {
         
         # Check if target exists and is a symlink pointing to our package
         if [ -L "$target_path" ]; then
-            local link_target=$(readlink "$target_path")
+            local link_target=$(get_link_target "$target_path")
             # Check if link points to our package (handle both absolute and relative paths)
             if echo "$link_target" | grep -q "$package_path" || echo "$link_target" | grep -q "$package_name"; then
                 installed_files=$((installed_files + 1))
@@ -795,7 +818,7 @@ check_package_status_readlink() {
         local target_path="$TARGET/$rel_path"
         
         if [ -L "$target_path" ]; then
-            local link_target=$(readlink "$target_path")
+            local link_target=$(get_link_target "$target_path")
             if echo "$link_target" | grep -q "$package_path" || echo "$link_target" | grep -q "$package_name"; then
                 echo "installed" >> "$temp_file"
             else
