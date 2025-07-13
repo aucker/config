@@ -1,7 +1,20 @@
 #!/bin/bash
 # Stow installation script for dotfiles
 
+# Guard: Exit if running under Windows command prompt or PowerShell
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$WINDIR" ]]; then
+    echo "❌ Windows environment detected!"
+    echo "Please use the Windows toolchain instead:"
+    echo "   PowerShell: .\stow-windows.ps1"
+    echo "   "
+    echo "This script is designed for Unix-like systems only."
+    exit 1
+fi
+
 echo "Installing dotfiles with Stow..."
+echo "Note: Windows configurations in windows/ directory are ignored by this script."
+echo "      Windows users should use stow-windows.ps1 instead."
+echo ""
 
 # Function to install a package with proper error handling
 install_package() {
