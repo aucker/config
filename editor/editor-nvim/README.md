@@ -30,3 +30,11 @@
 - **Diagnostics**: Integrated diagnostics with virtual text.
 - **Miscellaneous**: Clipboards integration and enhanced navigation.
 
+### Recent Optimizations (2025-07-13)
+- **Fixed Rust clipboard command**: Changed from `wl-copy` to `pbcopy` for macOS compatibility
+- **Fixed LSP inlay hints bug**: Corrected undefined `bufnr` variable to `ev.buf`
+- **Simplified LSP keymaps**: Removed unnecessary helper function for cleaner, more standard code
+- **Updated deprecated vim.loop**: Changed to `vim.uv or vim.loop` for newer Neovim compatibility
+- **Improved plugin lazy loading**: Added `event = "VeryLazy"` to leap.nvim, vim-matchup, and nvim-rooter for faster startup
+- **Performance impact**: Plugins now load "just in time" rather than all at startup, improving initial responsiveness
+

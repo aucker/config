@@ -265,7 +265,8 @@ vim.api.nvim_create_autocmd('Filetype', {
 -- first, grab the manager
 -- https://github.com/folke/lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+local uv = vim.uv or vim.loop -- compatibility with older Neovim versions
+if not uv.fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
 		"clone",
@@ -347,6 +348,7 @@ require("lazy").setup({
 	-- quick navigation
 	{
 		'ggandor/leap.nvim',
+		event = "VeryLazy",
 		config = function()
 			require('leap').create_default_mappings()
 		end
@@ -354,6 +356,7 @@ require("lazy").setup({
 	-- better %
 	{
 		'andymass/vim-matchup',
+		event = "VeryLazy",
 		config = function()
 			vim.g.matchup_matchparen_offscreen = { method = "popup" }
 		end
@@ -361,6 +364,7 @@ require("lazy").setup({
 	-- auto-cd to root of git project
 	{
 		'notjedi/nvim-rooter.lua',
+		event = "VeryLazy",
 		config = function()
 			require('nvim-rooter').setup()
 		end
@@ -487,34 +491,31 @@ require("lazy").setup({
 
 					-- Buffer local mappings.
 					-- See `:help vim.lsp.*` for documentation on any of the below functions
-					local function buf_set_keymap(mode, lhs, rhs, desc)
-						vim.keymap.set(mode, lhs, rhs, { buffer = ev.buf, desc = desc })
-					end
-					
-					buf_set_keymap('n', 'gD', vim.lsp.buf.declaration, 'Go to declaration')
-					buf_set_keymap('n', 'gd', vim.lsp.buf.definition, 'Go to definition')
-					buf_set_keymap('n', 'K', vim.lsp.buf.hover, 'Show hover info')
-					buf_set_keymap('n', 'gi', vim.lsp.buf.implementation, 'Go to implementation')
-					buf_set_keymap('n', '<C-k>', vim.lsp.buf.signature_help, 'Show signature help')
-					buf_set_keymap('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, 'Add workspace folder')
-					buf_set_keymap('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, 'Remove workspace folder')
-					buf_set_keymap('n', '<leader>wl', function()
+					-- local opts = { buffer = ev.buf }
+					vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { buffer = ev.buf, desc = 'Go to declaration' })
+					vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = ev.buf, desc = 'Go to definition' })
+					vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = ev.buf, desc = 'Show hover info' })
+					vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, { buffer = ev.buf, desc = 'Go to implementation' })
+					vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, { buffer = ev.buf, desc = 'Show signature help' })
+					vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, { buffer = ev.buf, desc = 'Add workspace folder' })
+					vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, { buffer = ev.buf, desc = 'Remove workspace folder' })
+					vim.keymap.set('n', '<leader>wl', function()
 						print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-					end, 'List workspace folders')
-					--buf_set_keymap('n', '<space>D', vim.lsp.buf.type_definition, 'Go to type definition')
-					buf_set_keymap('n', '<leader>r', vim.lsp.buf.rename, 'Rename symbol')
-					buf_set_keymap({ 'n', 'v' }, '<leader>a', vim.lsp.buf.code_action, 'Code action')
-					buf_set_keymap('n', 'gr', vim.lsp.buf.references, 'Go to references')
-					buf_set_keymap('n', '<leader>f', function()
+					end, { buffer = ev.buf, desc = 'List workspace folders' })
+					--vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, { buffer = ev.buf, desc = 'Go to type definition' })
+					vim.keymap.set('n', '<leader>r', vim.lsp.buf.rename, { buffer = ev.buf, desc = 'Rename symbol' })
+					vim.keymap.set({ 'n', 'v' }, '<leader>a', vim.lsp.buf.code_action, { buffer = ev.buf, desc = 'Code action' })
+					vim.keymap.set('n', 'gr', vim.lsp.buf.references, { buffer = ev.buf, desc = 'Go to references' })
+					vim.keymap.set('n', '<leader>f', function()
 						vim.lsp.buf.format { async = true }
-					end, 'Format buffer')
+					end, { buffer = ev.buf, desc = 'Format buffer' })
 
 					local client = vim.lsp.get_client_by_id(ev.data.client_id)
 
 					-- When https://neovim.io/doc/user/lsp.html#lsp-inlay_hint stabilizes
 					-- TODO: find some way to make this only apply to the current line.
 					if client.server_capabilities.inlayHintProvider then
-					    vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+					    vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
 					end
 
 					-- None of this semantics tokens business.
@@ -620,7 +621,7 @@ require("lazy").setup({
 			vim.g.rustfmt_autosave = 1
 			vim.g.rustfmt_emit_files = 1
 			vim.g.rustfmt_fail_silently = 0
-			vim.g.rust_clip_command = 'wl-copy'
+			vim.g.rust_clip_command = 'pbcopy'
 		end
 	},
 	-- fish
