@@ -11,6 +11,7 @@ set -gx PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
 
 # Set Python PATH
 set -gx PATH /Users/aucker/Library/Python/3.13/bin $PATH
+set -gx PATH $HOME/.cargo/bin $PATH
 
 # Set default editor
 set -gx EDITOR nvim

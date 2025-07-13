@@ -435,6 +435,7 @@ require("lazy").setup({
 					}
 					server_config.filetypes = {"c", "cpp", "cc", "cuda", "ino"}
 				elseif server == "rust_analyzer" then
+					server_config.cmd = { vim.fn.expand("~/.cargo/bin/rust-analyzer") }
 					server_config.settings = {
 						["rust-analyzer"] = {
 							cargo = {
