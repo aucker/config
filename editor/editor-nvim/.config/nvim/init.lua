@@ -2,7 +2,7 @@
 vim.keymap.set("n", "<Space>", "<Nop>", { silent = true })
 vim.g.mapleader = " "
 
--- It works for me
+-- Set terminal colors
 vim.o.termguicolors = true
 
 -------------------------------------------------------------------------------
@@ -74,7 +74,14 @@ vim.opt.diffopt:append('indent-heuristic')
 -- show a column at 80 characters as a guide for long lines
 vim.opt.colorcolumn = '80'
 --- except in Rust where the rule is 100 characters
-vim.api.nvim_create_autocmd('Filetype', { pattern = 'rust', command = 'set colorcolumn=100' })
+local rust_formatting = vim.api.nvim_create_augroup('rust_formatting', { clear = true })
+vim.api.nvim_create_autocmd('Filetype', {
+    pattern = 'rust',
+    group = rust_formatting,
+    callback = function()
+        vim.opt_local.colorcolumn = '100'
+    end
+})
 -- show more hidden characters
 -- also, show tabs nicer
 vim.opt.list = true
@@ -93,33 +100,19 @@ vim.opt.clipboard = "unnamed"
 -- quick-open
 vim.keymap.set('', '<C-p>', '<cmd>Files<cr>')
 -- search buffers
-vim.keymap.set('n', '<leader>;', '<cmd>Buffers<cr>')
+vim.keymap.set('n', '<leader>;', '<cmd>Buffers<cr>', { desc = 'Search buffers' })
 -- quick-save
-vim.keymap.set('n', '<leader>w', '<cmd>w<cr>')
+vim.keymap.set('n', '<leader>w', '<cmd>w<cr>', { desc = 'Quick save' })
 -- make missing : less annoying
 vim.keymap.set('n', ';', ':')
--- Ctrl+j and Ctrl+k as Esc
-vim.keymap.set('n', '<C-j>', '<Esc>')
-vim.keymap.set('i', '<C-j>', '<Esc>')
-vim.keymap.set('v', '<C-j>', '<Esc>')
-vim.keymap.set('s', '<C-j>', '<Esc>')
-vim.keymap.set('x', '<C-j>', '<Esc>')
-vim.keymap.set('c', '<C-j>', '<Esc>')
-vim.keymap.set('o', '<C-j>', '<Esc>')
-vim.keymap.set('l', '<C-j>', '<Esc>')
-vim.keymap.set('t', '<C-j>', '<Esc>')
+-- Ctrl+j and Ctrl+k as Esc (consolidated for all modes)
+local escape_modes = { "n", "i", "v", "s", "x", "c", "o", "l", "t" }
+local opts = { silent = true }
+vim.keymap.set(escape_modes, '<C-j>', '<Esc>', opts)
 -- Ctrl-j is a little awkward unfortunately:
 -- https://github.com/neovim/neovim/issues/5916
 -- So we also map Ctrl+k
-vim.keymap.set('n', '<C-k>', '<Esc>')
-vim.keymap.set('i', '<C-k>', '<Esc>')
-vim.keymap.set('v', '<C-k>', '<Esc>')
-vim.keymap.set('s', '<C-k>', '<Esc>')
-vim.keymap.set('x', '<C-k>', '<Esc>')
-vim.keymap.set('c', '<C-k>', '<Esc>')
-vim.keymap.set('o', '<C-k>', '<Esc>')
-vim.keymap.set('l', '<C-k>', '<Esc>')
-vim.keymap.set('t', '<C-k>', '<Esc>')
+vim.keymap.set(escape_modes, '<C-k>', '<Esc>', opts)
 -- Ctrl+h to stop searching
 vim.keymap.set('v', '<C-h>', '<cmd>nohlsearch<cr>')
 vim.keymap.set('n', '<C-h>', '<cmd>nohlsearch<cr>')
@@ -129,26 +122,30 @@ vim.keymap.set('', 'L', '$')
 -- Neat X clipboard integration
 -- <leader>p will paste clipboard into buffer
 -- <leader>c will copy entire buffer into clipboard
--- vim.keymap.set('n', '<leader>p', '<cmd>read !wl-paste<cr>')
--- vim.keymap.set('n', '<leader>c', '<cmd>w !wl-copy<cr><cr>')
-vim.keymap.set('n', '<leader>p', '<cmd>read !pbpaste<cr>')
-vim.keymap.set('n', '<leader>c', '<cmd>w !pbcopy<cr><cr>')
+-- vim.keymap.set('n', '<leader>p', '<cmd>read !wl-paste<cr>', { desc = 'Paste from clipboard' })
+-- vim.keymap.set('n', '<leader>c', '<cmd>w !wl-copy<cr><cr>', { desc = 'Copy buffer to clipboard' })
+vim.keymap.set('n', '<leader>p', '<cmd>read !pbpaste<cr>', { desc = 'Paste from clipboard' })
+vim.keymap.set('n', '<leader>c', '<cmd>w !pbcopy<cr><cr>', { desc = 'Copy buffer to clipboard' })
 -- <leader><leader> toggles between buffers
-vim.keymap.set('n', '<leader><leader>', '<c-^>')
+vim.keymap.set('n', '<leader><leader>', '<c-^>', { desc = 'Toggle between buffers' })
 -- <leader>, shows/hides hidden characters, this works with list chars
-vim.keymap.set('n', '<leader>,', ':set invlist<cr>')
+vim.keymap.set('n', '<leader>,', ':set invlist<cr>', { desc = 'Toggle hidden characters' })
+-- Helper function for search centering
+local function center_search(key)
+	return key .. 'zz'
+end
+
 -- always center search results
-vim.keymap.set('n', 'n', 'nzz', { silent = true })
-vim.keymap.set('n', 'N', 'Nzz', { silent = true })
-vim.keymap.set('n', '*', '*zz', { silent = true })
-vim.keymap.set('n', '#', '#zz', { silent = true })
-vim.keymap.set('n', 'g*', 'g*zz', { silent = true })
+local search_keys = { 'n', 'N', '*', '#', 'g*' }
+for _, key in ipairs(search_keys) do
+	vim.keymap.set('n', key, center_search(key), { silent = true })
+end
 -- "very magic" (less escaping needed) regexes by default
 vim.keymap.set('n', '?', '?\\v')
 vim.keymap.set('n', '/', '/\\v')
 vim.keymap.set('c', '%s/', '%sm/')
 -- open new file adjacent to current file
-vim.keymap.set('n', '<leader>o', ':e <C-R>=expand("%:p:h") . "/" <cr>')
+vim.keymap.set('n', '<leader>o', ':e <C-R>=expand("%:p:h") . "/" <cr>', { desc = 'Open file in current directory' })
 -- no arrow keys --- force yourself to use the home row
 vim.keymap.set('n', '<up>', '<nop>')
 vim.keymap.set('n', '<down>', '<nop>')
@@ -163,7 +160,7 @@ vim.keymap.set('n', '<right>', ':bn<cr>')
 vim.keymap.set('n', 'j', 'gj')
 vim.keymap.set('n', 'k', 'gk')
 -- handy keymap for replacing up to next _ (like in variable names)
-vim.keymap.set('n', '<leader>m', 'ct_')
+vim.keymap.set('n', '<leader>m', 'ct_', { desc = 'Change to next underscore' })
 -- F1 is pretty close to Esc, so you probably meant Esc
 vim.keymap.set('', '<F1>', '<Esc>')
 vim.keymap.set('i', '<F1>', '<Esc>')
@@ -183,34 +180,50 @@ vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
 --
 -------------------------------------------------------------------------------
 -- highlight yanked text
-vim.api.nvim_create_autocmd(
-	'TextYankPost',
-	{
-		pattern = '*',
-		command = 'silent! lua vim.highlight.on_yank({ timeout = 500 })'
-	}
-)
+vim.api.nvim_create_autocmd('TextYankPost', {
+    pattern = '*',
+    callback = function()
+        vim.highlight.on_yank({ timeout = 500 })
+    end
+})
 -- jump to last edit position on opening file
-vim.api.nvim_create_autocmd(
-	'BufReadPost',
-	{
-		pattern = '*',
-		callback = function(ev)
-			if vim.fn.line("'\"") > 1 and vim.fn.line("'\"") <= vim.fn.line("$") then
-				-- except for in git commit messages
-				-- https://stackoverflow.com/questions/31449496/vim-ignore-specifc-file-in-autocommand
-				if not vim.fn.expand('%:p'):find('.git', 1, true) then
-					vim.cmd('exe "normal! g\'\\""')
-				end
-			end
-		end
-	}
-)
+vim.api.nvim_create_autocmd('BufReadPost', {
+    pattern = '*',
+    callback = function(ev)
+        if vim.fn.line("'\"") > 1 and vim.fn.line("'\"") <= vim.fn.line("$") then
+            -- except for in git commit messages
+            -- https://stackoverflow.com/questions/31449496/vim-ignore-specifc-file-in-autocommand
+            if not vim.fn.expand('%:p'):find('.git', 1, true) then
+                vim.cmd('exe "normal! g\'\\""')
+            end
+        end
+    end
+})
 -- prevent accidental writes to buffers that shouldn't be edited
-vim.api.nvim_create_autocmd('BufRead', { pattern = '*.orig', command = 'set readonly' })
-vim.api.nvim_create_autocmd('BufRead', { pattern = '*.pacnew', command = 'set readonly' })
+local readonly_files = vim.api.nvim_create_augroup('readonly_files', { clear = true })
+vim.api.nvim_create_autocmd('BufRead', {
+    pattern = '*.orig',
+    group = readonly_files,
+    callback = function()
+        vim.opt_local.readonly = true
+    end
+})
+vim.api.nvim_create_autocmd('BufRead', {
+    pattern = '*.pacnew',
+    group = readonly_files,
+    callback = function()
+        vim.opt_local.readonly = true
+    end
+})
 -- leave paste mode when leaving insert mode (if it was on)
-vim.api.nvim_create_autocmd('InsertLeave', { pattern = '*', command = 'set nopaste' })
+local paste_mode = vim.api.nvim_create_augroup('paste_mode', { clear = true })
+vim.api.nvim_create_autocmd('InsertLeave', {
+    pattern = '*',
+    group = paste_mode,
+    callback = function()
+        vim.opt.paste = false
+    end
+})
 -- help filetype detection (add as needed)
 --vim.api.nvim_create_autocmd('BufRead', { pattern = '*.ext', command = 'set filetype=someft' })
 -- correctly classify mutt buffers
@@ -346,7 +359,6 @@ require("lazy").setup({
 		end
 	},
 	-- auto-cd to root of git project
-	-- 'airblade/vim-rooter'
 	{
 		'notjedi/nvim-rooter.lua',
 		config = function()
@@ -390,96 +402,112 @@ require("lazy").setup({
 			"williamboman/mason-lspconfig.nvim",
 		},
 		config = function()
-			-- Setup language servers.
+			-- Setup mason
+			require("mason").setup()
+			require("mason-lspconfig").setup()
+
+			-- Setup unified capabilities
+			local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+			-- Setup language servers
 			local lspconfig = require('lspconfig')
 
-			-- C/C++
-			-- local capabilities = require('cmp_nvim_lsp').default_capabilities()
-			lspconfig.clangd.setup({
-				cmd = {
-					"clangd",
-					"--background-index",
-					"--pch-storage=memory",
-					"--clang-tidy",
-				},
-				-- capabilities = capabilities,
-				filetypes = {"c", "cpp", "cc", "cuda", "ino"},
-			})
+			-- Define the servers to setup
+			local servers = { "rust_analyzer", "clangd", "bashls", "ruff_lsp" }
 
-			-- Rust
-			vim.lsp.config('rust_analyzer', {
-				-- Server-specific settings. See `:help lspconfig-setup`
-				settings = {
-					["rust-analyzer"] = {
-						cargo = {
-							features = "all",
-						},
-						checkOnSave = {
-							enable = true,
-						},
-						check = {
-							command = "clippy",
-						},
-						imports = {
-							group = {
-								enable = false,
+			-- Setup each server with unified capabilities
+			for _, server in ipairs(servers) do
+				local server_config = {
+					capabilities = capabilities,
+				}
+
+				-- Server-specific configurations
+				if server == "clangd" then
+					server_config.cmd = {
+						"clangd",
+						"--background-index",
+						"--pch-storage=memory",
+						"--clang-tidy",
+					}
+					server_config.filetypes = {"c", "cpp", "cc", "cuda", "ino"}
+				elseif server == "rust_analyzer" then
+					server_config.settings = {
+						["rust-analyzer"] = {
+							cargo = {
+								features = "all",
+							},
+							checkOnSave = {
+								enable = true,
+							},
+							check = {
+								command = "clippy",
+							},
+							imports = {
+								group = {
+									enable = false,
+								},
+							},
+							completion = {
+								postfix = {
+									enable = false,
+								},
 							},
 						},
-						completion = {
-							postfix = {
-								enable = false,
-							},
-						},
-					},
-				},
-			})
-			vim.lsp.enable('rust_analyzer')
+					}
+				elseif server == "bashls" then
+					-- Only setup if bash-language-server is available
+					if vim.fn.executable('bash-language-server') ~= 1 then
+						goto continue
+					end
+				elseif server == "ruff_lsp" then
+					-- Only setup if ruff-lsp is available
+					if vim.fn.executable('ruff-lsp') ~= 1 then
+						goto continue
+					end
+				end
 
-			-- Bash LSP
-			if vim.fn.executable('bash-language-server') == 1 then
-				vim.lsp.enable('bashls')
-			end
-
-			-- Ruff for Python
-			if vim.fn.executable('ruff-lsp') == 1 then
-				vim.lsp.enable('ruff-lsp')
+				lspconfig[server].setup(server_config)
+				::continue::
 			end
 
 			-- Global mappings.
 			-- See `:help vim.diagnostic.*` for documentation on any of the below functions
-			vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
-			vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
-			vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-			vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist)
+			vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open diagnostic float' })
+			vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic' })
+			vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic' })
+			vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Set diagnostic loclist' })
 
 			-- Use LspAttach autocommand to only map the following keys
 			-- after the language server attaches to the current buffer
 			vim.api.nvim_create_autocmd('LspAttach', {
-				group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+				group = vim.api.nvim_create_augroup('UserLspConfig', { clear = true }),
 				callback = function(ev)
 					-- Enable completion triggered by <c-x><c-o>
 					vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
 					-- Buffer local mappings.
 					-- See `:help vim.lsp.*` for documentation on any of the below functions
-					local opts = { buffer = ev.buf }
-					vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-					vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-					vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-					vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-					vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-					vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, opts)
-					vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, opts)
-					vim.keymap.set('n', '<leader>wl', function()
+					local function buf_set_keymap(mode, lhs, rhs, desc)
+						vim.keymap.set(mode, lhs, rhs, { buffer = ev.buf, desc = desc })
+					end
+					
+					buf_set_keymap('n', 'gD', vim.lsp.buf.declaration, 'Go to declaration')
+					buf_set_keymap('n', 'gd', vim.lsp.buf.definition, 'Go to definition')
+					buf_set_keymap('n', 'K', vim.lsp.buf.hover, 'Show hover info')
+					buf_set_keymap('n', 'gi', vim.lsp.buf.implementation, 'Go to implementation')
+					buf_set_keymap('n', '<C-k>', vim.lsp.buf.signature_help, 'Show signature help')
+					buf_set_keymap('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, 'Add workspace folder')
+					buf_set_keymap('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, 'Remove workspace folder')
+					buf_set_keymap('n', '<leader>wl', function()
 						print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-					end, opts)
-					--vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
-					vim.keymap.set('n', '<leader>r', vim.lsp.buf.rename, opts)
-					vim.keymap.set({ 'n', 'v' }, '<leader>a', vim.lsp.buf.code_action, opts)
-					vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-					vim.keymap.set('n', '<leader>f', function()
+					end, 'List workspace folders')
+					--buf_set_keymap('n', '<space>D', vim.lsp.buf.type_definition, 'Go to type definition')
+					buf_set_keymap('n', '<leader>r', vim.lsp.buf.rename, 'Rename symbol')
+					buf_set_keymap({ 'n', 'v' }, '<leader>a', vim.lsp.buf.code_action, 'Code action')
+					buf_set_keymap('n', 'gr', vim.lsp.buf.references, 'Go to references')
+					buf_set_keymap('n', '<leader>f', function()
 						vim.lsp.buf.format { async = true }
-					end, opts)
+					end, 'Format buffer')
 
 					local client = vim.lsp.get_client_by_id(ev.data.client_id)
 
@@ -572,7 +600,10 @@ require("lazy").setup({
 		ft = { "svelte" },
 	},
 	-- toml
-	'cespare/vim-toml',
+	{
+		'cespare/vim-toml',
+		ft = { "toml" },
+	},
 	-- yaml
 	{
 		"cuducos/yaml.nvim",
@@ -593,7 +624,10 @@ require("lazy").setup({
 		end
 	},
 	-- fish
-	'khaveesh/vim-fish-syntax',
+	{
+		'khaveesh/vim-fish-syntax',
+		ft = { "fish" },
+	},
 	-- markdown
 	{
 		'plasticboy/vim-markdown',
