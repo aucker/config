@@ -1,0 +1,28 @@
+# Ignore Windows-specific files and directories
+windows/
+*.bat
+*.cmd
+*.ps1
+*.exe
+*.msi
+*.dll
+*.reg
+desktop.ini
+Thumbs.db
+*.lnk
+
+# Ignore common editor backup files
+*~
+*.swp
+*.swo
+*.tmp
+.#*
+\#*#
+
+# Ignore OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
