@@ -81,12 +81,23 @@ end
 # INTERACTIVE SHELL CONFIGURATION
 # =============================================================================
 
-#if status --is-interactive
+# Check if interactive
+if status --is-interactive
 #    # Base16 theme support
 #    if test -d ~/dev/others/base16/templates/fish-shell
 #        set fish_function_path $fish_function_path ~/dev/others/base16/templates/fish-shell/functions
 #        builtin source ~/dev/others/base16/templates/fish-shell/conf.d/base16.fish
 #    end
+
+    # Determine terminal
+    set terminal (echo $TERM)
+
+    # Check if terminal is Kitty or Alacritty
+    if string match -q -r '(xterm-kitty|alacritty)' -- $terminal
+        if not set -q TMUX
+            exec tmux
+        end
+    end
 #
 #    # Auto-start tmux (except in tmux or linux terminal)
 #    switch $TERM
@@ -97,7 +108,7 @@ end
 #                exec tmux
 #            end
 #    end
-#end
+end
 
 # =============================================================================
 # EXTERNAL TOOL INTEGRATION
