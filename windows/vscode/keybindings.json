@@ -4,16 +4,16 @@
         "key": "ctrl+n",
         "command": "-workbench.action.files.newUntitledFile"
     },
-    {
-        "key": "ctrl+n",
-        "command": "cursorDown",
-        "when": "textInputFocus || panelFocus"
-    },
-    {
-        "key": "ctrl+p",
-        "command": "cursorUp",
-        "when": "textInputFocus || panelFocus"
-    },
+    // {
+    //     "key": "ctrl+n",
+    //     "command": "cursorDown",
+    //     "when": "textInputFocus || panelFocus"
+    // },
+    // {
+    //     "key": "ctrl+p",
+    //     "command": "cursorUp",
+    //     "when": "textInputFocus || panelFocus"
+    // },
 
     // quick open ctrl+shift+p
     {
