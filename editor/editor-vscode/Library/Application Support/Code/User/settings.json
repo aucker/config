@@ -17,6 +17,63 @@
     "diffEditor.ignoreTrimWhitespace": false,
     "explorer.confirmDragAndDrop": false,
     "security.workspace.trust.untrustedFiles": "open",
+    
+    "todo-tree.general.tags": [
+        "-",
+        "!",
+        "?",
+        ">",
+        "TODO",
+        "FIXME"
+    ],
+    "todo-tree.general.statusBar": "tags",
+    "todo-tree.highlights.customHighlight": {
+        "-": {
+            "background": "#222",
+            "foreground": "#6D8CB4",
+            "iconColour": "#6D8CB4",
+            "icon": "check",
+            "type": "text-and-comment",
+            "hideFromTree": true
+        },
+        "!": {
+            "background": "#222",
+            "foreground": "#d9444a",
+            "iconColour": "#d9444a",
+            "icon": "check",
+            "type": "text-and-comment",
+            "hideFromTree": true
+        },
+        "?": {
+            "background": "#222",
+            "foreground": "#f5c018",
+            "iconColour": "#f5c018",
+            "icon": "check",
+            "type": "text-and-comment",
+            "hideFromTree": true
+        },
+        ">": {
+            "background": "#222",
+            "foreground": "#fff",
+            "iconColour": "#fff",
+            "icon": "check",
+            "type": "text-and-comment",
+            "hideFromTree": true
+        },
+        "TODO": {
+            "background": "#f5c018",
+            "foreground": "#000",
+            "iconColour": "#f5c018",
+            "icon": "check",
+            "type": "text-and-comment"
+        },
+        "FIXME": {
+            "background": "#d9444a",
+            "foreground": "#000",
+            "iconColour": "#d9444a",
+            "type": "text-and-comment"
+        }
+    },
 
     // log config
     "files.associations": {
@@ -81,7 +138,7 @@
         // bind `;` to show the command pallette, and don't show the message on the status bar
         {
             "before": [
-                ";"
+                "<C-p>"
             ],
             "commands": [
                 // "workbench.action.showCommands",
@@ -90,10 +147,10 @@
             "silent": true
         },
         // bind `;` to `:` in normal mode
-        // {
-        //     "before": [";"],
-        //     "after": [":"]
-        // },
+        {
+            "before": [";"],
+            "after": [":"]
+        },
         // bind `ctrl+h` to trun off highlight search
         {
             "before": [
