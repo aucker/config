@@ -138,7 +138,7 @@
         // bind `;` to show the command pallette, and don't show the message on the status bar
         {
             "before": [
-                "C-p"
+                "<C-p>"
             ],
             "commands": [
                 // "workbench.action.showCommands",
