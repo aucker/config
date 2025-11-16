@@ -76,11 +76,8 @@ vim.opt.colorcolumn = '80'
 --- except in Rust where the rule is 100 characters
 local rust_formatting = vim.api.nvim_create_augroup('rust_formatting', { clear = true })
 vim.api.nvim_create_autocmd('Filetype', {
-    pattern = 'rust',
-    group = rust_formatting,
-    callback = function()
-        vim.opt_local.colorcolumn = '100'
-    end
+	pattern = 'rust',
+	command = 'set colorcolumn=100'
 })
 -- show more hidden characters
 -- also, show tabs nicer
@@ -91,6 +88,9 @@ vim.opt.listchars = 'tab:^ ,nbsp:¬,extends:»,precedes:«,trail:•'
 
 -- Use system clipboard in nvim
 vim.opt.clipboard = "unnamed"
+
+-- Integrate python in nvim
+vim.g.python3_host_prog = vim.fn.expand("~/.venvs/nvim/bin/python")
 
 -------------------------------------------------------------------------------
 --
@@ -181,48 +181,48 @@ vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
 -------------------------------------------------------------------------------
 -- highlight yanked text
 vim.api.nvim_create_autocmd('TextYankPost', {
-    pattern = '*',
-    callback = function()
-        vim.highlight.on_yank({ timeout = 500 })
-    end
+	pattern = '*',
+	callback = function()
+		vim.highlight.on_yank({ timeout = 500 })
+	end
 })
 -- jump to last edit position on opening file
 vim.api.nvim_create_autocmd('BufReadPost', {
-    pattern = '*',
-    callback = function(ev)
-        if vim.fn.line("'\"") > 1 and vim.fn.line("'\"") <= vim.fn.line("$") then
-            -- except for in git commit messages
-            -- https://stackoverflow.com/questions/31449496/vim-ignore-specifc-file-in-autocommand
-            if not vim.fn.expand('%:p'):find('.git', 1, true) then
-                vim.cmd('exe "normal! g\'\\""')
-            end
-        end
-    end
+	pattern = '*',
+	callback = function(ev)
+		if vim.fn.line("'\"") > 1 and vim.fn.line("'\"") <= vim.fn.line("$") then
+			-- except for in git commit messages
+			-- https://stackoverflow.com/questions/31449496/vim-ignore-specifc-file-in-autocommand
+			if not vim.fn.expand('%:p'):find('.git', 1, true) then
+				vim.cmd('exe "normal! g\'\\""')
+			end
+		end
+	end
 })
 -- prevent accidental writes to buffers that shouldn't be edited
 local readonly_files = vim.api.nvim_create_augroup('readonly_files', { clear = true })
 vim.api.nvim_create_autocmd('BufRead', {
-    pattern = '*.orig',
-    group = readonly_files,
-    callback = function()
-        vim.opt_local.readonly = true
-    end
+	pattern = '*.orig',
+	group = readonly_files,
+	callback = function()
+		vim.opt_local.readonly = true
+	end
 })
 vim.api.nvim_create_autocmd('BufRead', {
-    pattern = '*.pacnew',
-    group = readonly_files,
-    callback = function()
-        vim.opt_local.readonly = true
-    end
+	pattern = '*.pacnew',
+	group = readonly_files,
+	callback = function()
+		vim.opt_local.readonly = true
+	end
 })
 -- leave paste mode when leaving insert mode (if it was on)
 local paste_mode = vim.api.nvim_create_augroup('paste_mode', { clear = true })
 vim.api.nvim_create_autocmd('InsertLeave', {
-    pattern = '*',
-    group = paste_mode,
-    callback = function()
-        vim.opt.paste = false
-    end
+	pattern = '*',
+	group = paste_mode,
+	callback = function()
+		vim.opt.paste = false
+	end
 })
 -- help filetype detection (add as needed)
 --vim.api.nvim_create_autocmd('BufRead', { pattern = '*.ext', command = 'set filetype=someft' })
@@ -236,13 +236,13 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
 -- also, produce "flowed text" wrapping
 -- https://brianbuccola.com/line-breaks-in-mutt-and-vim/
 vim.api.nvim_create_autocmd('Filetype', {
-  pattern = 'mail',
-  group = email,
-  command = 'setlocal formatoptions+=w',
+	pattern = 'mail',
+	group = email,
+	command = 'setlocal formatoptions+=w',
 })
 -- shorter columns in text because it reads better that way
 local text = vim.api.nvim_create_augroup('text', { clear = true })
-for _, pat in ipairs({'text', 'markdown', 'mail', 'gitcommit'}) do
+for _, pat in ipairs({ 'text', 'markdown', 'mail', 'gitcommit' }) do
 	vim.api.nvim_create_autocmd('Filetype', {
 		pattern = pat,
 		group = text,
@@ -296,7 +296,8 @@ require("lazy").setup({
 
 			-- Make it clearly visible which argument we're at.
 			local marked = vim.api.nvim_get_hl(0, { name = 'PMenu' })
-			vim.api.nvim_set_hl(0, 'LspSignatureActiveParameter', { fg = marked.fg, bg = marked.bg, ctermfg = marked.ctermfg, ctermbg = marked.ctermbg, bold = true })
+			vim.api.nvim_set_hl(0, 'LspSignatureActiveParameter',
+				{ fg = marked.fg, bg = marked.bg, ctermfg = marked.ctermfg, ctermbg = marked.ctermbg, bold = true })
 			-- XXX
 			-- Would be nice to customize the highlighting of warnings and the like to make
 			-- them less glaring. But alas
@@ -314,7 +315,7 @@ require("lazy").setup({
 			vim.g.lightline = {
 				active = {
 					left = {
-						{ 'mode', 'paste' },
+						{ 'mode',     'paste' },
 						{ 'readonly', 'filename', 'modified' }
 					},
 					right = {
@@ -334,6 +335,7 @@ require("lazy").setup({
 					return vim.fn.getreg('%')
 				end
 			end
+
 			-- https://github.com/itchyny/lightline.vim/issues/657
 			vim.api.nvim_exec(
 				[[
@@ -350,7 +352,13 @@ require("lazy").setup({
 		'ggandor/leap.nvim',
 		event = "VeryLazy",
 		config = function()
-			require('leap').create_default_mappings()
+			local function map(modes, lhs, rhs, desc)
+				vim.keymap.set(modes, lhs, rhs, { silent = true, desc = desc })
+			end
+
+			map({ 'n', 'x', 'o' }, 's', '<Plug>(leap-forward)', 'Leap forward')
+			map({ 'n', 'x', 'o' }, 'S', '<Plug>(leap-backward)', 'Leap backward')
+			map({ 'n', 'x', 'o' }, 'gs', '<Plug>(leap-from-window)', 'Leap from window')
 		end
 	},
 	-- better %
@@ -390,11 +398,14 @@ require("lazy").setup({
 					-- proximity-sort can't do its thing
 					return 'fd --hidden --type file --follow'
 				else
-					return vim.fn.printf('fd --hidden --type file --follow | proximity-sort %s', vim.fn.shellescape(vim.fn.expand('%')))
+					return vim.fn.printf('fd --hidden --type file --follow | proximity-sort %s',
+						vim.fn.shellescape(vim.fn.expand('%')))
 				end
 			end
+
 			vim.api.nvim_create_user_command('Files', function(arg)
-				vim.fn['fzf#vim#files'](arg.qargs, { source = list_cmd(), options = '--scheme=path --tiebreak=index' }, arg.bang)
+				vim.fn['fzf#vim#files'](arg.qargs, { source = list_cmd(), options = '--scheme=path --tiebreak=index' },
+					arg.bang)
 			end, { bang = true, nargs = '?', complete = "dir" })
 		end
 	},
@@ -413,9 +424,6 @@ require("lazy").setup({
 			-- Setup unified capabilities
 			local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-			-- Setup language servers
-			local lspconfig = require('lspconfig')
-
 			-- Define the servers to setup
 			local servers = { "rust_analyzer", "clangd", "bashls", "ruff_lsp" }
 
@@ -433,7 +441,7 @@ require("lazy").setup({
 						"--pch-storage=memory",
 						"--clang-tidy",
 					}
-					server_config.filetypes = {"c", "cpp", "cc", "cuda", "ino"}
+					server_config.filetypes = { "c", "cpp", "cc", "cuda", "ino" }
 				elseif server == "rust_analyzer" then
 					server_config.cmd = { vim.fn.expand("~/.cargo/bin/rust-analyzer") }
 					server_config.settings = {
@@ -471,7 +479,8 @@ require("lazy").setup({
 					end
 				end
 
-				lspconfig[server].setup(server_config)
+				vim.lsp.config(server, server_config)
+				vim.lsp.enable(server)
 				::continue::
 			end
 
@@ -496,16 +505,21 @@ require("lazy").setup({
 					vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { buffer = ev.buf, desc = 'Go to declaration' })
 					vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = ev.buf, desc = 'Go to definition' })
 					vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = ev.buf, desc = 'Show hover info' })
-					vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, { buffer = ev.buf, desc = 'Go to implementation' })
-					vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, { buffer = ev.buf, desc = 'Show signature help' })
-					vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, { buffer = ev.buf, desc = 'Add workspace folder' })
-					vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, { buffer = ev.buf, desc = 'Remove workspace folder' })
+					vim.keymap.set('n', 'gi', vim.lsp.buf.implementation,
+						{ buffer = ev.buf, desc = 'Go to implementation' })
+					vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help,
+						{ buffer = ev.buf, desc = 'Show signature help' })
+					vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder,
+						{ buffer = ev.buf, desc = 'Add workspace folder' })
+					vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder,
+						{ buffer = ev.buf, desc = 'Remove workspace folder' })
 					vim.keymap.set('n', '<leader>wl', function()
 						print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
 					end, { buffer = ev.buf, desc = 'List workspace folders' })
 					--vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, { buffer = ev.buf, desc = 'Go to type definition' })
 					vim.keymap.set('n', '<leader>r', vim.lsp.buf.rename, { buffer = ev.buf, desc = 'Rename symbol' })
-					vim.keymap.set({ 'n', 'v' }, '<leader>a', vim.lsp.buf.code_action, { buffer = ev.buf, desc = 'Code action' })
+					vim.keymap.set({ 'n', 'v' }, '<leader>a', vim.lsp.buf.code_action,
+						{ buffer = ev.buf, desc = 'Code action' })
 					vim.keymap.set('n', 'gr', vim.lsp.buf.references, { buffer = ev.buf, desc = 'Go to references' })
 					vim.keymap.set('n', '<leader>f', function()
 						vim.lsp.buf.format { async = true }
@@ -516,7 +530,7 @@ require("lazy").setup({
 					-- When https://neovim.io/doc/user/lsp.html#lsp-inlay_hint stabilizes
 					-- TODO: find some way to make this only apply to the current line.
 					if client.server_capabilities.inlayHintProvider then
-					    vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+						vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
 					end
 
 					-- None of this semantics tokens business.
@@ -540,7 +554,7 @@ require("lazy").setup({
 			"hrsh7th/cmp-path",
 		},
 		config = function()
-			local cmp = require'cmp'
+			local cmp = require 'cmp'
 			cmp.setup({
 				snippet = {
 					-- REQUIRED by nvim-cmp. get rid of it once we can
