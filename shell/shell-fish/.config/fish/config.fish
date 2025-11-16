@@ -9,12 +9,16 @@
 # Set Homebrew PATH (must be early in config)
 set -gx PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
 
+# Set Homebrew curl proxy
+set -Ux HOMEBREW_CURLRC 1
+
 # Set Python PATH
 set -gx PATH /Users/aucker/Library/Python/3.13/bin $PATH
 set -gx PATH $HOME/.cargo/bin $PATH
 
 # Set default editor
 set -gx EDITOR nvim
+set -x GEMINI_API_KEY "AIzaSyDWxtGiSOkCSLuKWHCXY3VNEvLwxYsYdwM"
 
 # FZF configuration
 set -gx FZF_DEFAULT_COMMAND 'fd --type file --follow'
@@ -29,6 +33,13 @@ set -gx LESS_TERMCAP_se \e'[0m'           # end standout-mode
 set -gx LESS_TERMCAP_so \e'[38;5;246m'    # begin standout-mode - info box
 set -gx LESS_TERMCAP_ue \e'[0m'           # end underline
 set -gx LESS_TERMCAP_us \e'[04;38;5;146m' # begin underline
+
+# Stop using mirror
+# set -x HOMEBREW_NO_AUTO_UPDATE 1
+# set -x HOMEBREW_BREW_GIT_REMOTE https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
+# set -x HOMEBREW_CORE_GIT_REMOTE https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
+# set -x HOMEBREW_CASK_GIT_REMOTE https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
+# set -x HOMEBREW_BOTTLE_DOMAIN https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 
 # =============================================================================
 # ABBREVIATIONS
@@ -274,7 +285,7 @@ function fish_prompt
     set_color brblack
     echo -n "["(date "+%H:%M")"] "
     set_color blue
-    echo -n "aucker"
+    echo -n "andy"
     if test $PWD != $HOME
         set_color brblack
         echo -n ':'
@@ -288,50 +299,3 @@ function fish_prompt
     set_color normal
 end
 
-function fish_greeting
-    echo
-    echo -e (uname -ro | awk '{print " \\e[1mOS: \\e[0;32m"$0"\\e[0m"}')
-    echo -e (uptime | sed -E 's/.* up (.*), [0-9]+ users?.*/\1/' | awk '{print " \\e[1mUptime: \\e[0;32m"$0"\\e[0m"}')
-    echo -e (uname -n | awk '{print " \\e[1mHostname: \\e[0;32m"$0"\\e[0m"}')
-
-    set r (random 0 100)
-    if test $r -lt 5 # only occasionally show backlog (5%)
-        echo -e " \e[1mBacklog\e[0;32m"
-        set_color blue
-        echo "  [project] <description>"
-        echo
-    end
-
-    set_color normal
-    echo -e " \e[1mTODOs\e[0;32m"
-    echo
-    if test $r -lt 10
-        # unimportant, so show rarely
-        set_color cyan
-        # echo "  [project] <description>"
-    end
-    if test $r -lt 25
-        # back-of-my-mind, so show occasionally
-        set_color green
-        # echo "  [project] <description>"
-    end
-    if test $r -lt 50
-        # upcoming, so prompt regularly
-        set_color yellow
-        # echo "  [project] <description>"
-    end
-
-    # urgent, so prompt always
-    set_color red
-    # echo "  [project] <description>"
-
-    echo
-
-    if test -s ~/todo
-        set_color magenta
-        cat ~/todo | sed 's/^/ /'
-        echo
-    end
-
-    set_color normal
-end

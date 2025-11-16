@@ -3,7 +3,7 @@
     "terminal.integrated.fontSize": 14,
     "files.autoSave": "afterDelay",
     "editor.renderWhitespace": "all",
-    "editor.rulers": [80, 120],
+    // "editor.rulers": [80, 120],
     "editor.semanticHighlighting.enabled": true,
     // the following configuration is for senmantic highlighting of rust
     // "editor.semanticTokenColorCustomizations": {
@@ -281,14 +281,24 @@
         "editor.wordSeparators": "`~!@#$%^&*()=+[{]}\\|;:'\",.<>/?"
     },
     "[c]": {
-        "editor.defaultFormatter": "xaver.clang-format"
+        "editor.defaultFormatter": "xaver.clang-format",
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.rulers": [80],
     },
     "[cpp]": {
         "editor.defaultFormatter": "xaver.clang-format",
+        "editor.tabSize": 2,
         "editor.insertSpaces": true,
-        "editor.tabSize": 2
+        "editor.rulers": [120],
+    },
+    "[javascript]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.rulers": [120],
     },
     "window.zoomLevel": -1,
-    "python.defaultInterpreterPath": "/opt/homebrew/bin/python3"
+    "python.defaultInterpreterPath": "/opt/homebrew/bin/python3",
+    "redhat.telemetry.enabled": false
 }
   // Test comment added via stow
