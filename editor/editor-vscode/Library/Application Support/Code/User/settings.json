@@ -2,9 +2,21 @@
     "editor.fontSize": 15,
     "terminal.integrated.fontSize": 14,
     "files.autoSave": "afterDelay",
-    "editor.renderWhitespace": "all",
+    "files.autoSaveDelay": 1500,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "modificationsIfAvailable",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
+        "source.fixAll": "explicit"
+    },
+    "editor.renderWhitespace": "trailing",
     // "editor.rulers": [80, 120],
     "editor.semanticHighlighting.enabled": true,
+    "editor.detectIndentation": false,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
     // the following configuration is for senmantic highlighting of rust
     // "editor.semanticTokenColorCustomizations": {
     //     "enabled": true,
@@ -17,7 +29,8 @@
     "diffEditor.ignoreTrimWhitespace": false,
     "explorer.confirmDragAndDrop": false,
     "security.workspace.trust.untrustedFiles": "open",
-    
+    "editor.trimAutoWhitespace": true,
+
     "todo-tree.general.tags": [
         "-",
         "!",
@@ -105,7 +118,7 @@
     //         }
     //     ]
     // },
-    "editor.fontFamily": "Fira Code, Maple Mono NF, Zed Plex Mono, SF Mono, Cascadia Code",
+    "editor.fontFamily": "Fira Code Retina, Maple Mono NF, Zed Plex Mono, SF Mono, Cascadia Code",
     "terminal.integrated.fontFamily": "NotoSansM Nerd Font",
     "editor.fontLigatures": true,
     "editor.inlineSuggest.enabled": true,
@@ -182,7 +195,7 @@
         }
     ],
     "vim.visualModeKeyBindings": [
-        //  bind `>` and `<` to indent and outdent lines 
+        //  bind `>` and `<` to indent and outdent lines
         {
             "before": [
                 ">"
@@ -268,6 +281,7 @@
     "editor.wordWrap": "on",
     "git.terminalAuthentication": false,
     "workbench.iconTheme": "material-icon-theme",
+    "workbench.editor.enablePreview": false,
     "open-in-browser.default": "chrome",
     "cmake.pinnedCommands": [
         "workbench.action.tasks.configureTaskRunner",
@@ -299,6 +313,8 @@
     },
     "window.zoomLevel": -1,
     "python.defaultInterpreterPath": "/opt/homebrew/bin/python3",
-    "redhat.telemetry.enabled": false
+    "redhat.telemetry.enabled": false,
+    "[java]": {
+        "editor.defaultFormatter": "redhat.java"
+    }
 }
-  // Test comment added via stow
