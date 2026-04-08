@@ -56,6 +56,9 @@ abbr -a c cargo
 abbr -a ct 'cargo t'
 abbr -a m make
 
+# My own shortcuts
+abbr -a an antigravity
+
 # Git shortcuts
 abbr -a g git
 abbr -a gc 'git checkout'
@@ -299,3 +302,6 @@ function fish_prompt
     set_color normal
 end
 
+
+# Added by Antigravity
+fish_add_path /Users/aucker/.antigravity/antigravity/bin
