@@ -2,9 +2,6 @@
 vim.keymap.set("n", "<Space>", "<Nop>", { silent = true })
 vim.g.mapleader = " "
 
--- Set terminal colors
-vim.o.termguicolors = true
-
 -------------------------------------------------------------------------------
 --
 -- preferences
@@ -80,14 +77,19 @@ vim.api.nvim_create_autocmd('Filetype', {
 	command = 'set colorcolumn=100'
 })
 -- show more hidden characters
--- also, show tabs nicer
+-- also, show tabs nicer (like VSCode/Zed)
 vim.opt.list = true
-vim.opt.listchars = 'tab:^ ,nbsp:¬,extends:»,precedes:«,trail:•'
--- vim.opt.listchars = 'tab:  ,nbsp:¬,extends:»,precedes:«,trail:•'
--- vim.opt.listchars = 'tab:| ,nbsp:¬,extends:»,precedes:«,trail:•'
+vim.opt.listchars = {
+	tab = '│ ',      -- elegant vertical bar for tabs (looks like indent guides)
+	nbsp = '␣',      -- visible non-breaking space
+	extends = '›',   -- sleeker right indicator
+	precedes = '‹',  -- sleeker left indicator
+	trail = '·',     -- subtle middle-dot for trailing spaces instead of a large bullet
+	-- space = '·',  -- uncomment if you want all spaces to be tiny dots like VSCode
+}
 
 -- Use system clipboard in nvim
-vim.opt.clipboard = "unnamed"
+vim.opt.clipboard = "unnamedplus"
 
 -- Integrate python in nvim
 vim.g.python3_host_prog = vim.fn.expand("~/.venvs/nvim/bin/python")
@@ -349,7 +351,7 @@ require("lazy").setup({
 	},
 	-- quick navigation
 	{
-		'ggandor/leap.nvim',
+ 		'https://codeberg.org/andyg/leap.nvim',
 		event = "VeryLazy",
 		config = function()
 			local function map(modes, lhs, rhs, desc)
