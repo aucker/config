@@ -80,11 +80,11 @@ vim.api.nvim_create_autocmd('Filetype', {
 -- also, show tabs nicer (like VSCode/Zed)
 vim.opt.list = true
 vim.opt.listchars = {
-	tab = '│ ',      -- elegant vertical bar for tabs (looks like indent guides)
-	nbsp = '␣',      -- visible non-breaking space
-	extends = '›',   -- sleeker right indicator
-	precedes = '‹',  -- sleeker left indicator
-	trail = '·',     -- subtle middle-dot for trailing spaces instead of a large bullet
+	tab = '│ ', -- elegant vertical bar for tabs (looks like indent guides)
+	nbsp = '␣', -- visible non-breaking space
+	extends = '›', -- sleeker right indicator
+	precedes = '‹', -- sleeker left indicator
+	trail = '·', -- subtle middle-dot for trailing spaces instead of a large bullet
 	-- space = '·',  -- uncomment if you want all spaces to be tiny dots like VSCode
 }
 
@@ -290,6 +290,18 @@ require("lazy").setup({
 			vim.cmd([[colorscheme gruvbox-dark-hard]])
 			-- vim.cmd([[colorscheme base16-gruvbox-dark-hard]])
 			vim.o.background = 'dark'
+
+			-- Disable italics globally (except for comments)
+			-- This robustly strips italics from all Treesitter capture groups (@keyword, @type, etc.)
+			-- regardless of how deeply the colorscheme links them!
+			for name, hl in pairs(vim.api.nvim_get_hl(0, {})) do
+				local is_comment = name:match("Comment") or name:match("comment")
+				if hl.italic and not is_comment then
+					hl.italic = false
+					vim.api.nvim_set_hl(0, name, hl)
+				end
+			end
+
 			-- XXX: hi Normal ctermbg=NONE
 			--
 			-- Make comments more prominent -- they are important.
@@ -351,7 +363,7 @@ require("lazy").setup({
 	},
 	-- quick navigation
 	{
- 		'https://codeberg.org/andyg/leap.nvim',
+		'https://codeberg.org/andyg/leap.nvim',
 		event = "VeryLazy",
 		config = function()
 			local function map(modes, lhs, rhs, desc)
@@ -427,7 +439,7 @@ require("lazy").setup({
 			local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 			-- Define the servers to setup
-			local servers = { "rust_analyzer", "clangd", "bashls", "ruff_lsp" }
+			local servers = { "rust_analyzer", "clangd", "bashls", "ruff_lsp", "lua_ls" }
 
 			-- Setup each server with unified capabilities
 			for _, server in ipairs(servers) do
@@ -436,7 +448,17 @@ require("lazy").setup({
 				}
 
 				-- Server-specific configurations
-				if server == "clangd" then
+				if server == "lua_ls" then
+					server_config.settings = {
+						Lua = {
+							diagnostics = { globals = { "vim" } }, -- avoid 'undefined global' warnings
+							workspace = {
+								library = vim.api.nvim_get_runtime_file("", true),
+								checkThirdParty = false,
+							},
+						}
+					}
+				elseif server == "clangd" then
 					server_config.cmd = {
 						"clangd",
 						"--background-index",
@@ -539,6 +561,19 @@ require("lazy").setup({
 					-- https://www.reddit.com/r/neovim/comments/143efmd/is_it_possible_to_disable_treesitter_completely/
 					client.server_capabilities.semanticTokensProvider = nil
 				end,
+			})
+		end
+	},
+	-- treesitter
+	{
+		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+		config = function()
+			require("nvim-treesitter.configs").setup({
+				ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "rust", "python", "bash", "markdown" },
+				sync_install = false,
+				highlight = { enable = true },
+				indent = { enable = true },
 			})
 		end
 	},
