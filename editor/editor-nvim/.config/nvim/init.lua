@@ -312,6 +312,16 @@ require("lazy").setup({
 			local marked = vim.api.nvim_get_hl(0, { name = 'PMenu' })
 			vim.api.nvim_set_hl(0, 'LspSignatureActiveParameter',
 				{ fg = marked.fg, bg = marked.bg, ctermfg = marked.ctermfg, ctermbg = marked.ctermbg, bold = true })
+
+			-- Style inlay hints to be subtle: dim fg, italic, no background
+			-- So they feel like annotations, not actual code
+			local comment_hl = vim.api.nvim_get_hl(0, { name = 'Comment' })
+			vim.api.nvim_set_hl(0, 'LspInlayHint', {
+				fg = comment_hl.fg,
+				bg = nil,
+				italic = true,
+				ctermfg = comment_hl.ctermfg,
+			})
 			-- XXX
 			-- Would be nice to customize the highlighting of warnings and the like to make
 			-- them less glaring. But alas
@@ -551,10 +561,52 @@ require("lazy").setup({
 
 					local client = vim.lsp.get_client_by_id(ev.data.client_id)
 
-					-- When https://neovim.io/doc/user/lsp.html#lsp-inlay_hint stabilizes
-					-- TODO: find some way to make this only apply to the current line.
+					-- Inlay hints: start disabled, toggle with <leader>i
+					-- Use CursorHold to show hints only when cursor is idle,
+					-- and hide them when moving, to reduce visual noise.
 					if client.server_capabilities.inlayHintProvider then
-						vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+						-- Start with hints OFF by default (less noise)
+						vim.lsp.inlay_hint.enable(false, { bufnr = ev.buf })
+
+						-- Toggle inlay hints with <leader>i
+						vim.keymap.set('n', '<leader>i', function()
+							local enabled = vim.lsp.inlay_hint.is_enabled({ bufnr = ev.buf })
+							vim.lsp.inlay_hint.enable(not enabled, { bufnr = ev.buf })
+							if not enabled then
+								vim.notify('Inlay hints ON', vim.log.levels.INFO)
+							else
+								vim.notify('Inlay hints OFF', vim.log.levels.INFO)
+							end
+						end, { buffer = ev.buf, desc = 'Toggle inlay hints' })
+
+						-- "Peek" mode: show hints on CursorHold, hide on move
+						-- Bind <leader>I (capital i) to enable peek mode for this buffer
+						local peek_mode = false
+						local peek_group = vim.api.nvim_create_augroup('InlayHintPeek_' .. ev.buf, { clear = true })
+						vim.keymap.set('n', '<leader>I', function()
+							peek_mode = not peek_mode
+							if peek_mode then
+								vim.notify('Inlay hint PEEK mode ON (shows on idle)', vim.log.levels.INFO)
+								vim.api.nvim_create_autocmd('CursorHold', {
+									buffer = ev.buf,
+									group = peek_group,
+									callback = function()
+										vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+									end,
+								})
+								vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI', 'InsertEnter' }, {
+									buffer = ev.buf,
+									group = peek_group,
+									callback = function()
+										vim.lsp.inlay_hint.enable(false, { bufnr = ev.buf })
+									end,
+								})
+							else
+								vim.notify('Inlay hint PEEK mode OFF', vim.log.levels.INFO)
+								vim.api.nvim_clear_autocmds({ group = peek_group, buffer = ev.buf })
+								vim.lsp.inlay_hint.enable(false, { bufnr = ev.buf })
+							end
+						end, { buffer = ev.buf, desc = 'Toggle inlay hint peek mode (idle-only)' })
 					end
 
 					-- None of this semantics tokens business.
