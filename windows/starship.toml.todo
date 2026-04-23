@@ -1,0 +1,44 @@
+# Don't show a newline at the start of the prompt
+add_newline = false
+
+# Precise format matching your fish prompt logic:
+# [Time] asus[:dir] (git) |
+format = "$time$hostname$directory$git_branch $character"
+
+[time]
+disabled = false
+format = "[$time]($style) "
+style = "bright-black"
+time_format = "[%H:%M]"
+
+[hostname]
+ssh_only = false
+# Using "asus" as requested
+format = "[asus](blue)"
+
+[directory]
+# Only show :dirname if not in home
+format = "[:$path](yellow)"
+truncation_length = 1
+truncation_symbol = ""
+home_symbol = ""
+
+[git_branch]
+symbol = ""
+# Added a space before the branch name
+format = " [($branch)](green)"
+
+[git_status]
+disabled = true
+
+[character]
+# Exactly one space after the pipe
+success_symbol = "[|](red)"
+error_symbol = "[|](red)"
+vimcmd_symbol = "[|](green)"
+
+[cmd_duration]
+disabled = true
+
+[python]
+disabled = true
