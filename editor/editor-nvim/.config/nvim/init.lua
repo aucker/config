@@ -166,6 +166,8 @@ vim.keymap.set('n', '<leader>m', 'ct_', { desc = 'Change to next underscore' })
 -- F1 is pretty close to Esc, so you probably meant Esc
 vim.keymap.set('', '<F1>', '<Esc>')
 vim.keymap.set('i', '<F1>', '<Esc>')
+-- Global search in project with Ripgrep
+vim.keymap.set('n', '<leader>s', ':Rg ', { desc = 'Global search with ripgrep' })
 
 -------------------------------------------------------------------------------
 --
@@ -187,6 +189,17 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 	callback = function()
 		vim.highlight.on_yank({ timeout = 500 })
 	end
+})
+-- Automatically create parent directories when saving a file
+vim.api.nvim_create_autocmd('BufWritePre', {
+    pattern = '*',
+    callback = function(event)
+        if event.match:match('^%w+://') then
+            return
+        end
+        local file = vim.loop.fs_realpath(event.match) or event.match
+        vim.fn.mkdir(vim.fn.fnamemodify(file, ':h'), 'p')
+    end,
 })
 -- jump to last edit position on opening file
 vim.api.nvim_create_autocmd('BufReadPost', {
