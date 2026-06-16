@@ -765,6 +765,14 @@ require("lazy").setup({
 			vim.g.vim_markdown_auto_insert_bullets = 0
 		end
 	},
+	-- Hex Editor
+	{
+		'RaafatTurki/hex.nvim',
+		lazy = false,
+		config = function()
+			require("hex").setup()
+		end
+	},
 })
 
 --[[
