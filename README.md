@@ -36,7 +36,7 @@ Here's a status output example showing installed packages:
 Category             Package                        Status         
 ========             =======                        ======         
 ./editor             editor-nvim                    installed
-./server             server-fish                    installed
+./core               core-config                    installed
 ./shell              shell-fish                     installed
 ./shell              shell-git                      installed
 ./terminal           terminal-alacritty             installed
@@ -86,4 +86,6 @@ This script handles Windows-specific configurations from the `windows/` director
 - `terminal/` - Terminal configurations (alacritty, etc.)
 - `server/` - Server-specific configurations
 - `windows/` - Windows-only configurations (handled by `stow-windows.ps1`)
+
+w-windows.ps1`)
 
