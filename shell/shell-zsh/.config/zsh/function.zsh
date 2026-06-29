@@ -8,19 +8,27 @@ alias c="clear"
 alias grep="grep --color=auto"
 alias p="pwd"
 alias v="nvim"
+alias vim="nvim"
 alias r="yazi"
 alias l="eza -al --icons --group-directories-first"
+alias ls="eza"
 alias ll="eza -a --icons --group-directories-first"
 # alias ssh="kitty +kitten ssh"
 alias du="dust -r -n 999999999"
 alias tree="tree -aC"
-alias icpng="mkdir converted-images; sips -s format png * --out converted-images"
-alias icjpg="mkdir converted-images; sips -s format jpeg * --out converted-images"
+
+# Platform-specific aliases
+case "$OSTYPE" in
+  darwin*)
+    alias icpng="mkdir converted-images; sips -s format png * --out converted-images"
+    alias icjpg="mkdir converted-images; sips -s format jpeg * --out converted-images"
+    ;;
+esac
 
 alias g='XDG_CONFIG_HOME="$HOME/.config" lazygit'
 alias gs="git status"
-alias ga="git add -A"
-alias gc="git commit -v"
+alias ga="git add -p"
+alias gc="git checkout"
 alias gc!="git commit -v --amend --no-edit"
 alias gl="git pull"
 alias gp="git push"
@@ -30,10 +38,6 @@ alias gf="git fetch --all"
 alias gb="git branch"
 alias gr="git rebase"
 alias gt='cd "$(git rev-parse --show-toplevel)"'
-
-alias r="export RUST_BACKTRACE=1; cd ~/Desktop/yazi; cargo build -p yazi-fm && cd - && ~/Desktop/yazi/target/debug/yazi || cd -"
-alias rl="echo '' > ~/.local/state/yazi/yazi.log; tail -F ~/.local/state/yazi/yazi.log"
-alias rr="~/Desktop/yazi/target/debug/yazi --clear-cache"
 
 function yy() {
 	if [ -n "$YAZI_LEVEL" ]; then

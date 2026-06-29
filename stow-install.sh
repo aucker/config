@@ -59,7 +59,7 @@ install_package() {
 # Install shell packages
 if [ -d "shell" ]; then
     echo "📁 Processing shell category..."
-    for package in shell-fish shell-git; do
+    for package in shell-fish shell-git shell-zsh; do
         if [ -d "shell/$package" ]; then
             install_package "shell" "$package"
         else
