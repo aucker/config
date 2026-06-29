@@ -3,18 +3,38 @@
 # =============================================================================
 
 # =============================================================================
-# ENVIRONMENT VARIABLES
+# ENVIRONMENT VARIABLES & PATHS (OS Specific)
 # =============================================================================
 
-# Set Homebrew PATH (must be early in config)
-set -gx PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
+set -l os (uname -s)
 
-# Set Homebrew curl proxy
-set -Ux HOMEBREW_CURLRC 1
+if test "$os" = "Darwin"
+    # macOS specific
+    set -gx PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
+    set -Ux HOMEBREW_CURLRC 1
+    set -gx PATH /Users/aucker/Library/Python/3.13/bin $PATH
+    set -gx PATH $HOME/.cargo/bin $PATH
+else if test "$os" = "Linux"
+    # Linux specific
+    fish_add_path $HOME/.local/bin
+    fish_add_path $HOME/.cargo/bin
+    fish_add_path $HOME/go/bin
+    fish_add_path "/mnt/c/Users/aucker/AppData/Local/Programs/Microsoft VS Code/bin"
+    fish_add_path $HOME/toolchains/clang+llvm-18.1.8-x86_64-linux-gnu-ubuntu-18.04/bin
+    fish_add_path /usr/local/cuda-12.8/bin
+    fish_add_path $HOME/toolchains/cmake-3.31/bin
 
-# Set Python PATH
-set -gx PATH /Users/aucker/Library/Python/3.13/bin $PATH
-set -gx PATH $HOME/.cargo/bin $PATH
+    # CUDA LD_LIBRARY_PATH
+    set -l cuda_lib_path /usr/local/cuda-12.8/lib64
+    if not contains -- "$cuda_lib_path" $LD_LIBRARY_PATH
+        set -gx LD_LIBRARY_PATH "$cuda_lib_path" $LD_LIBRARY_PATH
+    else
+        set -gx LD_LIBRARY_PATH $LD_LIBRARY_PATH
+    end
+    if not set -q LD_LIBRARY_PATH
+        set -gx LD_LIBRARY_PATH "$cuda_lib_path"
+    end
+end
 
 # Set default editor
 set -gx EDITOR nvim
