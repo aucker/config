@@ -63,14 +63,14 @@ zstyle ":completion:*" special-dirs true
 zstyle ":completion:*" squeeze-slashes true
 zstyle ":completion:*" file-sort change
 zstyle ":completion:*" matcher-list "m:{[:lower:][:upper:]}={[:upper:][:lower:]}" "r:|=*" "l:|=* r:|=*"
-# source $ZDOTDIR/keymap.zsh
+# source $HOME/.zsh/keymap.zsh
 
 # Tabtab for node cli programs, e.g. `pnpm`
-# source $ZDOTDIR/tabtab/pnpm.zsh
+# source $HOME/.zsh/tabtab/pnpm.zsh
 
 # Initialize tools
-source $ZDOTDIR/function.zsh
-source $ZDOTDIR/fish_compat.zsh
+source $HOME/.zsh/function.zsh
+source $HOME/.zsh/fish_compat.zsh
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
