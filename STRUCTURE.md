@@ -35,10 +35,7 @@ Each category contains one GNU Stow package per logical tool using dashed, human
 - `terminal/terminal-kitty/` - Kitty terminal emulator
 - `terminal/terminal-wezterm/` - WezTerm terminal emulator
 
-### Server Category
-- `server/server-fish/` - Fish shell server configurations
-- `server/server-nginx/` - Nginx server configuration
-- `server/server-apache/` - Apache server configuration
+
 
 ## Windows Support
 
@@ -57,6 +54,12 @@ To install all packages in a category:
 ```bash
 stow -t ~ shell/*
 stow -t ~ editor/*
+```
+
+## Ignore Files
+
+The `.stow-local-ignore` file prevents Windows-specific files and common backup files from being processed by Stow, ensuring clean installations on POSIX systems.
+w -t ~ editor/*
 ```
 
 ## Ignore Files
