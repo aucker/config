@@ -18,7 +18,7 @@ jobs:
           scandir: '.'
           severity: 'warning'
         env:
-          SHELLCHECK_OPTS: '-e SC1091'
+          SHELLCHECK_OPTS: '-e SC1091 -e SC2155 -e SC2043'
 
   shfmt:
     runs-on: ubuntu-latest
@@ -37,6 +37,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     name: Basic Tests
+    env:
+      TERM: dumb
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies

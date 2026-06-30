@@ -13,7 +13,6 @@ if [[ $1 != "enable" && $1 != "disable" ]]; then
     exit 1
 fi
 
-
 # Get the number of internal keyboard
 number=$(xinput | grep AT | grep -E -o "[0-9]+" | head -2 | tail -1)
 

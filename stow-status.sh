@@ -18,18 +18,18 @@ check_package_status() {
     local package=$1
     local stowed=false
     local links_found=()
-    
+
     if [ ! -d "$package" ]; then
         echo "❌ $package: Package directory not found"
         return
     fi
-    
+
     # Find all files in the package directory
     while IFS= read -r -d '' file; do
         # Get the relative path from the package directory
         local rel_path="${file#$package/}"
         local target_path="$HOME/$rel_path"
-        
+
         # Check if the target exists and is a symlink pointing to our file
         if [ -L "$target_path" ]; then
             local link_target=$(readlink "$target_path")
@@ -39,7 +39,7 @@ check_package_status() {
             fi
         fi
     done < <(find "$package" -type f -print0)
-    
+
     if [ "$stowed" = true ]; then
         echo "✅ $package: STOWED"
         echo "   Symlinks found:"
