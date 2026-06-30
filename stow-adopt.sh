@@ -8,20 +8,20 @@ adopt_package() {
     local category=$1
     local package=$2
     echo "Adopting $category/$package..."
-    
+
     # Change to category directory
     cd "$category" || return 1
-    
+
     # Try to adopt the package
     local output
     local exit_code
-    
+
     output=$(stow --adopt -v -t ~ "$package" 2>&1)
     exit_code=$?
-    
+
     # Return to root directory
     cd ..
-    
+
     if [ $exit_code -eq 0 ]; then
         echo "✅ $category/$package adopted successfully"
         echo "$output" | grep "LINK:"
@@ -29,7 +29,7 @@ adopt_package() {
         echo "❌ Failed to adopt $category/$package"
         echo "$output"
     fi
-    
+
     return $exit_code
 }
 

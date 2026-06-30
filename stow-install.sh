@@ -21,20 +21,20 @@ install_package() {
     local category=$1
     local package=$2
     echo "Installing $category/$package..."
-    
+
     # Change to category directory and run stow
     cd "$category" || return 1
-    
+
     # Capture both stdout and stderr
     local output
     local exit_code
-    
+
     output=$(stow -v -t ~ "$package" 2>&1)
     exit_code=$?
-    
+
     # Return to root directory
     cd ..
-    
+
     # Check if there were conflicts
     if echo "$output" | grep -q "WARNING.*would cause conflicts"; then
         echo "⚠️  $category/$package has conflicts:"

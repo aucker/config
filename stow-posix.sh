@@ -1,5 +1,5 @@
-#!/bin/sh
-# stow-posix.sh - POSIX-compliant dotfiles symlink manager
+#!/bin/bash
+# stow-posix.sh - dotfiles symlink manager
 # Safety settings: exit on error, exit on undefined variables
 set -eu
 
@@ -40,7 +40,7 @@ VERSION="1.0.0"
 
 # Help text and usage information
 show_help() {
-    cat << 'EOF'
+    cat <<'EOF'
 stow-posix.sh - POSIX-compliant dotfiles symlink manager
 
 SYNOPSIS
@@ -200,15 +200,15 @@ show_version() {
 parse_args() {
     while [ $# -gt 0 ]; do
         case "$1" in
-            -n|--dry-run)
+            -n | --dry-run)
                 DRY_RUN=true
                 shift
                 ;;
-            -v|--verbose)
+            -v | --verbose)
                 VERBOSE=true
                 shift
                 ;;
-            -t|--target)
+            -t | --target)
                 if [ -z "$2" ]; then
                     echo "Error: --target requires a directory argument" >&2
                     exit 2
@@ -216,7 +216,7 @@ parse_args() {
                 TARGET="$2"
                 shift 2
                 ;;
-            -h|--help)
+            -h | --help)
                 show_help
                 exit 0
                 ;;
@@ -238,7 +238,7 @@ parse_args() {
                 ;;
         esac
     done
-    
+
     # Store remaining arguments
     COMMAND="$1"
     shift
@@ -264,9 +264,9 @@ main() {
         echo "Try '${SCRIPT_NAME} --help' for more information." >&2
         exit 2
     fi
-    
+
     parse_args "$@"
-    
+
     case "$COMMAND" in
         install)
             install_packages $ARGS
@@ -315,50 +315,50 @@ install_package() {
     local package_path="$1"
     local package_name="$(basename "$package_path")"
     local category="$(dirname "$package_path")"
-    
+
     if [ "$category" = "." ]; then
         category="$(pwd)"
     fi
-    
+
     log "Installing package: $package_name from $category"
-    
+
     # Check if package directory exists
     if [ ! -d "$package_path" ]; then
         error "Package directory '$package_path' does not exist"
         return 3
     fi
-    
+
     # Check if package contains any dotfiles
     if ! find "$package_path" -name ".*" -type f -o -name ".*" -type d | head -1 | grep -q .; then
         error "Package '$package_name' contains no dotfiles (files/directories starting with '.')"
         return 3
     fi
-    
+
     if [ "$DRY_RUN" = true ]; then
         echo "[DRY RUN] Would install: $package_name -> $TARGET"
         return 0
     fi
-    
+
     # Change to the category directory
     local original_dir="$(pwd)"
     cd "$category" || {
         error "Failed to change to category directory: $category"
         return 1
     }
-    
+
     # Capture stderr from stow command
     local stderr_output
     local exit_code
-    
+
     stderr_output=$(stow --no-folding -t "$TARGET" "$package_name" 2>&1)
     exit_code=$?
-    
+
     # Return to original directory
     cd "$original_dir" || {
         error "Failed to return to original directory"
         return 1
     }
-    
+
     # Handle different exit codes
     case $exit_code in
         0)
@@ -407,45 +407,45 @@ uninstall_package() {
     local package_path="$1"
     local package_name="$(basename "$package_path")"
     local category="$(dirname "$package_path")"
-    
+
     if [ "$category" = "." ]; then
         category="$(pwd)"
     fi
-    
+
     log "Uninstalling package: $package_name from $category"
-    
+
     if [ "$DRY_RUN" = true ]; then
         echo "[DRY RUN] Would uninstall: $package_name"
         return 0
     fi
-    
+
     # Change to the category directory
     local original_dir="$(pwd)"
     cd "$category" || {
         error "Failed to change to category directory: $category"
         return 1
     }
-    
+
     # Check if package directory exists
     if [ ! -d "$package_name" ]; then
         echo "⚠️  Package '$package_name' not found in category '$category'"
         cd "$original_dir"
         return 3
     fi
-    
+
     # Capture stderr from stow command
     local stderr_output
     local exit_code
-    
+
     stderr_output=$(stow -D -t "$TARGET" "$package_name" 2>&1)
     exit_code=$?
-    
+
     # Return to original directory
     cd "$original_dir" || {
         error "Failed to return to original directory"
         return 1
     }
-    
+
     # Handle different exit codes
     case $exit_code in
         0)
@@ -470,11 +470,11 @@ uninstall_package() {
 # Discover packages in a category
 find_packages_in_category() {
     local category="$1"
-    
+
     if [ ! -d "$category" ]; then
         return 1
     fi
-    
+
     find "$category" -maxdepth 1 -type d ! -name "$category" | while read -r package_dir; do
         package_name="$(basename "$package_dir")"
         # Check if package contains dotfiles
@@ -497,15 +497,15 @@ find_all_packages() {
 # Main install function
 install_packages() {
     check_stow_availability
-    
+
     if [ $# -eq 0 ]; then
         error "No packages specified for installation"
         return 2
     fi
-    
+
     local failed_count=0
     local success_count=0
-    
+
     for arg in "$@"; do
         case "$arg" in
             all)
@@ -518,7 +518,7 @@ install_packages() {
                     esac
                 done
                 ;;
-            */*)  # Category/package format
+            */*) # Category/package format
                 install_package "$arg"
                 case $? in
                     0) success_count=$((success_count + 1)) ;;
@@ -550,7 +550,7 @@ install_packages() {
                             break
                         fi
                     done
-                    
+
                     if [ "$found" = false ]; then
                         error "Package or category '$arg' not found"
                         failed_count=$((failed_count + 1))
@@ -559,12 +559,12 @@ install_packages() {
                 ;;
         esac
     done
-    
+
     echo ""
     echo "📊 Installation summary:"
     echo "   ✅ Successful: $success_count"
     echo "   ❌ Failed: $failed_count"
-    
+
     if [ $failed_count -gt 0 ]; then
         return 1
     fi
@@ -573,15 +573,15 @@ install_packages() {
 # Main uninstall function
 uninstall_packages() {
     check_stow_availability
-    
+
     if [ $# -eq 0 ]; then
         error "No packages specified for uninstallation"
         return 2
     fi
-    
+
     local failed_count=0
     local success_count=0
-    
+
     for arg in "$@"; do
         case "$arg" in
             all)
@@ -594,7 +594,7 @@ uninstall_packages() {
                     esac
                 done
                 ;;
-            */*)  # Category/package format
+            */*) # Category/package format
                 uninstall_package "$arg"
                 case $? in
                     0) success_count=$((success_count + 1)) ;;
@@ -626,7 +626,7 @@ uninstall_packages() {
                             break
                         fi
                     done
-                    
+
                     if [ "$found" = false ]; then
                         echo "⚠️  Package or category '$arg' not found"
                         failed_count=$((failed_count + 1))
@@ -635,12 +635,12 @@ uninstall_packages() {
                 ;;
         esac
     done
-    
+
     echo ""
     echo "📊 Uninstallation summary:"
     echo "   ✅ Successful: $success_count"
     echo "   ❌ Failed: $failed_count"
-    
+
     if [ $failed_count -gt 0 ]; then
         return 1
     fi
@@ -648,7 +648,7 @@ uninstall_packages() {
 
 # Check if tput is available for colors
 has_tput() {
-    command -v tput > /dev/null 2>&1
+    command -v tput >/dev/null 2>&1 && [ -n "${TERM:-}" ] && [ "${TERM:-}" != "dumb" ]
 }
 
 # Color functions
@@ -687,43 +687,43 @@ check_package_status() {
     local package_path="$1"
     local package_name="$(basename "$package_path")"
     local category="$(dirname "$package_path")"
-    
+
     if [ "$category" = "." ]; then
         category="$(pwd)"
     fi
-    
+
     # Check if package directory exists
     if [ ! -d "$package_path" ]; then
         echo "not found"
         return 1
     fi
-    
+
     # Check if package contains any dotfiles
     if ! find "$package_path" -name ".*" -type f -o -name ".*" -type d | head -1 | grep -q .; then
         echo "no dotfiles"
         return 1
     fi
-    
+
     # Change to the category directory
     local original_dir="$(pwd)"
     cd "$category" || {
         echo "error"
         return 1
     }
-    
+
     # Use stow dry-run to check status
     local stderr_output
     local exit_code
-    
+
     stderr_output=$(stow --no-folding --target "$TARGET" --adopt -n "$package_name" 2>&1)
     exit_code=$?
-    
+
     # Return to original directory
     cd "$original_dir" || {
         echo "error"
         return 1
     }
-    
+
     # Analyze the output to determine status
     if [ $exit_code -eq 0 ]; then
         # If stow dry-run succeeds, check if there are already links
@@ -732,16 +732,16 @@ check_package_status() {
             echo "error"
             return 1
         }
-        
+
         local unstow_output
         unstow_output=$(stow -D -n -t "$TARGET" "$package_name" 2>&1)
         local unstow_exit=$?
-        
+
         cd "$original_dir" || {
             echo "error"
             return 1
         }
-        
+
         if [ $unstow_exit -eq 0 ] && [ -n "$unstow_output" ]; then
             echo "installed"
         else
@@ -763,7 +763,7 @@ check_package_status() {
                     fi
                 fi
             done
-            
+
             if [ "$has_some_links" = true ]; then
                 echo "partially"
             else
@@ -779,28 +779,28 @@ check_package_status() {
 check_package_status_readlink() {
     local package_path="$1"
     local package_name="$(basename "$package_path")"
-    
+
     # Check if package directory exists
     if [ ! -d "$package_path" ]; then
         echo "not found"
         return 1
     fi
-    
+
     # Check if package contains any dotfiles
     if ! find "$package_path" -name ".*" -type f -o -name ".*" -type d | head -1 | grep -q .; then
         echo "no dotfiles"
         return 1
     fi
-    
+
     local total_files=0
     local installed_files=0
-    
+
     # Find all dotfiles in the package
     find "$package_path" -name ".*" -type f -o -name ".*" -type d | while read -r file; do
         total_files=$((total_files + 1))
         local rel_path="${file#$package_path/}"
         local target_path="$TARGET/$rel_path"
-        
+
         # Check if target exists and is a symlink pointing to our package
         if [ -L "$target_path" ]; then
             local link_target=$(get_link_target "$target_path")
@@ -810,30 +810,30 @@ check_package_status_readlink() {
             fi
         fi
     done
-    
+
     # Use a temporary file to store counts since we're in a subshell
     local temp_file="$(mktemp)"
     find "$package_path" -name ".*" -type f -o -name ".*" -type d | while read -r file; do
         local rel_path="${file#$package_path/}"
         local target_path="$TARGET/$rel_path"
-        
+
         if [ -L "$target_path" ]; then
             local link_target=$(get_link_target "$target_path")
             if echo "$link_target" | grep -q "$package_path" || echo "$link_target" | grep -q "$package_name"; then
-                echo "installed" >> "$temp_file"
+                echo "installed" >>"$temp_file"
             else
-                echo "not_installed" >> "$temp_file"
+                echo "not_installed" >>"$temp_file"
             fi
         else
-            echo "not_installed" >> "$temp_file"
+            echo "not_installed" >>"$temp_file"
         fi
     done
-    
+
     local total_files=$(find "$package_path" -name ".*" -type f -o -name ".*" -type d | wc -l)
     local installed_files=$(grep -c "installed" "$temp_file" 2>/dev/null || echo 0)
-    
+
     rm -f "$temp_file"
-    
+
     if [ "$installed_files" -eq "$total_files" ] && [ "$total_files" -gt 0 ]; then
         echo "installed"
     elif [ "$installed_files" -gt 0 ]; then
@@ -872,29 +872,29 @@ format_status() {
 
 show_status() {
     check_stow_availability
-    
+
     log "Showing status for target: $TARGET"
-    
+
     # Print header
     color_blue
     printf "%-20s %-30s %-15s\n" "Category" "Package" "Status"
     printf "%-20s %-30s %-15s\n" "========" "=======" "======"
     color_reset
-    
+
     # Find all packages and check their status
     find_all_packages | sort | while read -r package_path; do
         local package_name="$(basename "$package_path")"
         local category="$(dirname "$package_path")"
-        
+
         # Use readlink-based check as primary method (more reliable)
         local status=$(check_package_status_readlink "$package_path")
-        
+
         # Format the output
         printf "%-20s %-30s " "$category" "$package_name"
         format_status "$status"
         printf "\n"
     done
-    
+
     echo ""
     echo "Legend:"
     printf "  "
