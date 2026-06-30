@@ -17,6 +17,7 @@ jobs:
         with:
           scandir: '.'
           severity: 'warning'
+          ignore_paths: 'shell/shell-zsh'
         env:
           SHELLCHECK_OPTS: '-e SC1091 -e SC2155 -e SC2043'
 
