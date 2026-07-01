@@ -183,6 +183,17 @@ vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
 -- autocommands
 --
 -------------------------------------------------------------------------------
+-- Automatically create parent directories when saving a file
+vim.api.nvim_create_autocmd('BufWritePre', {
+    pattern = '*',
+    callback = function(event)
+        if event.match:match('^%w+://') then
+            return
+        end
+        local file = vim.loop.fs_realpath(event.match) or event.match
+        vim.fn.mkdir(vim.fn.fnamemodify(file, ':h'), 'p')
+    end,
+})
 -- highlight yanked text
 vim.api.nvim_create_autocmd('TextYankPost', {
 	pattern = '*',
@@ -342,6 +353,13 @@ require("lazy").setup({
 			-- call Base16hi("CocHintSign", g:base16_gui03, "", g:base16_cterm03, "", "", "")
 		end
 	},
+    -- HexDump
+    {
+        'RaafatTurki/hex.nvim',
+        config = function()
+            require('hex').setup()
+        end
+    },
 	-- nice bar at the bottom
 	{
 		'itchyny/lightline.vim',
