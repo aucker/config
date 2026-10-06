@@ -9,8 +9,6 @@ SAVEHIST=10000
 KEYTIMEOUT=1  # makes the switch between modes quicker
 HISTORY_SUBSTRING_SEARCH_PREFIXED=1  # enables prefixed search for zsh-history-substring-search
 
-. "$HOME/.cargo/env"
-
 # Temporary variables
 __TREE_IGNORE="-I '.git' -I '*.py[co]' -I '__pycache__' $__TREE_IGNORE"
 __FD_COMMAND="-L -H --no-ignore-vcs ${__TREE_IGNORE//-I/-E} $__FD_COMMAND"
@@ -22,7 +20,6 @@ export VISUAL="nvim"
 export BAT_THEME="Catppuccin-macchiato"
 export HOMEBREW_NO_ANALYTICS=1
 export RANGER_LOAD_DEFAULT_RC="FALSE"
-# export PNPM_HOME=$HOME/Library/pnpm
 
 export LESSKEYIN=$HOME/.config/less/.lesskey
 export LESSHISTFILE=$HOME/.config/less/.lesshst
