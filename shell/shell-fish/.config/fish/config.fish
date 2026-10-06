@@ -10,10 +10,21 @@ set -l os (uname -s)
 
 if test "$os" = "Darwin"
     # macOS specific
-    set -gx PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
-    set -Ux HOMEBREW_CURLRC 1
-    set -gx PATH /Users/aucker/Library/Python/3.13/bin $PATH
-    set -gx PATH $HOME/.cargo/bin $PATH
+    fish_add_path --global \
+        /opt/homebrew/bin \
+        /opt/homebrew/sbin \
+        $HOME/.local/bin \
+        $HOME/.cargo/bin \
+        $HOME/go/bin \
+        $HOME/.composer/vendor/bin \
+        $HOME/Library/pnpm \
+        /opt/homebrew/opt/postgresql@18/bin \
+        $HOME/.antigravity/antigravity/bin
+
+    # Only let Homebrew use ~/.curlrc while its local proxy is available.
+    if command -q nc; and nc -z 127.0.0.1 7897 2>/dev/null
+        set -gx HOMEBREW_CURLRC 1
+    end
 else if test "$os" = "Linux"
     # Linux specific
     fish_add_path $HOME/.local/bin
@@ -53,6 +64,34 @@ set -gx LESS_TERMCAP_se \e'[0m'           # end standout-mode
 set -gx LESS_TERMCAP_so \e'[38;5;246m'    # begin standout-mode - info box
 set -gx LESS_TERMCAP_ue \e'[0m'           # end underline
 set -gx LESS_TERMCAP_us \e'[04;38;5;146m' # begin underline
+
+# Claude w/ DeepSeek
+set -x ANTHROPIC_BASE_URL https://api.deepseek.com/anthropic
+set -x ANTHROPIC_MODEL deepseek-v4-pro[1m]
+set -x ANTHROPIC_DEFAULT_OPUS_MODEL deepseek-v4-pro[1m]
+set -x ANTHROPIC_DEFAULT_SONNET_MODEL deepseek-v4-pro[1m]
+set -x ANTHROPIC_DEFAULT_HAIKU_MODEL deepseek-v4-flash
+set -x CLAUDE_CODE_SUBAGENT_MODEL deepseek-v4-flash
+set -x CLAUDE_CODE_EFFORT_LEVEL max
+
+function __load_anthropic_token
+    set -l token
+
+    if command -q security
+        set token (security find-generic-password -a $USER -s codex-deepseek-anthropic-token -w 2>/dev/null)
+    end
+
+    # Local fallback: repository Git config is never committed or pushed.
+    if test -z "$token"; and command -q git; and test -d "$HOME/config/.git"
+        set token (git -C "$HOME/config" config --local --get codexSecrets.anthropicAuthToken 2>/dev/null)
+    end
+
+    if test -n "$token"
+        set -gx ANTHROPIC_AUTH_TOKEN "$token"
+    end
+end
+__load_anthropic_token
+functions -e __load_anthropic_token
 
 # Stop using mirror
 # set -x HOMEBREW_NO_AUTO_UPDATE 1
@@ -127,7 +166,7 @@ if status --is-interactive
     set terminal (echo $TERM)
 
     # Check if terminal is Kitty or Alacritty
-    if string match -q -r '(xterm-kitty|alacritty)' -- $terminal
+    if string match -q -r '(xterm-kitty|alacritty|xterm-ghostty)' -- $terminal
         if not set -q TMUX
             exec tmux
         end
@@ -176,15 +215,6 @@ set -g fish_prompt_pwd_dir_length 3
 function fzf_history --description "Search command history with fzf"
     history | fzf | read -l line
     and commandline $line
-end
-
-bind \cr fzf_history
-
-function fish_user_key_bindings
-    bind \cz 'fg>/dev/null ^/dev/null'
-    if functions -q fzf_key_bindings
-        fzf_key_bindings
-    end
 end
 
 # =============================================================================
@@ -237,7 +267,7 @@ end
 
 # 1Password CLI helper
 function pwl --description "Sign in to 1Password"
-    set -Ux OP_SESSION_my (pw signin my --raw)
+    set -gx OP_SESSION_my (pw signin my --raw)
 end
 
 # SSH wrapper for specific hosts
@@ -299,29 +329,3 @@ function remote_alacritty --description "Set up alacritty terminfo on remote sys
     ssh $argv[1] tic "alacritty.ti"
     ssh $argv[1] rm "alacritty.ti"
 end
-
-# =============================================================================
-# PROMPT FUNCTIONS
-# =============================================================================
-
-function fish_prompt
-    set_color brblack
-    echo -n "["(date "+%H:%M")"] "
-    set_color blue
-    echo -n "andy"
-    if test $PWD != $HOME
-        set_color brblack
-        echo -n ':'
-        set_color yellow
-        echo -n (basename $PWD)
-    end
-    set_color green
-    printf '%s ' (__fish_git_prompt)
-    set_color red
-    echo -n '| '
-    set_color normal
-end
-
-
-# Added by Antigravity
-fish_add_path /Users/aucker/.antigravity/antigravity/bin

@@ -72,8 +72,8 @@ end
 
 # --- Helper: network info (interface, SSID, IP) ---
 function _net_info
-    # find default interface
-    set primary (route get default 2>/dev/null | awk '/interface:/{print $2}')
+    # find default interface without DNS reverse lookup (-n)
+    set primary (route -n get default 2>/dev/null | awk '/interface:/{print $2; exit}')
     if test -z "$primary"
         printf "(offline)"
         return
@@ -83,15 +83,15 @@ function _net_info
     set ip (ipconfig getifaddr $primary 2>/dev/null)
     test -z "$ip"; and set ip "(no IP)"
 
-    # if Wi-Fi, get SSID cleanly
-    if string match -qr '^en[01]$' $primary
-        set rawssid (networksetup -getairportnetwork $primary 2>/dev/null)
-        if string match -qr '^Current Wi-Fi Network:' $rawssid
-            set ssid (string replace -r '^Current Wi-Fi Network: ' '' $rawssid)
-        else
-            set ssid "(no SSID)"
-        end
+    # query interface summary (filter out macOS privacy placeholder '<redacted>')
+    set summary (ipconfig getsummary $primary 2>/dev/null)
+    set iftype (printf "%s\n" $summary | awk -F ' : ' '/^  InterfaceType :/{print $2; exit}')
+    set ssid (printf "%s\n" $summary | awk -F ' : ' '/^  SSID :/{print $2; exit}')
+
+    if test -n "$ssid" -a "$ssid" != "<redacted>"
         printf "%s — %s (%s)" $primary $ssid $ip
+    else if test "$iftype" = "WiFi"
+        printf "%s — Wi-Fi (%s)" $primary $ip
     else
         printf "%s (%s)" $primary $ip
     end
