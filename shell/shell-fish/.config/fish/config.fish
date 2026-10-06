@@ -49,7 +49,6 @@ end
 
 # Set default editor
 set -gx EDITOR nvim
-set -x GEMINI_API_KEY "***REMOVED***"
 
 # FZF configuration
 set -gx FZF_DEFAULT_COMMAND 'fd --type file --follow'
