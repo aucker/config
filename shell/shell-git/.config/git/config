@@ -4,7 +4,7 @@
 	proxy = http://127.0.0.1:7897
 
 [user]
-	name = aucker
+	name = Aucker
 	email = aucker2020@gmail.com
 	signingkey = E5F21A529583690F
 [ui "color"]

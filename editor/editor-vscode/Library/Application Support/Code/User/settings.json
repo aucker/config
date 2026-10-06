@@ -306,15 +306,23 @@
         "editor.insertSpaces": true,
         "editor.rulers": [120],
     },
+    "[rust]": {
+      "editor.rulers": [80, 100],
+    },
     "[javascript]": {
         "editor.tabSize": 2,
         "editor.insertSpaces": true,
         "editor.rulers": [120],
+    },
+    "[markdown]": {
+      "editor.wordWrap": "wordWrapColumn",
+      "editor.wordWrapColumn": 80
     },
     "window.zoomLevel": -1,
     "python.defaultInterpreterPath": "/opt/homebrew/bin/python3",
     "redhat.telemetry.enabled": false,
     "[java]": {
         "editor.defaultFormatter": "redhat.java"
-    }
+    },
+    "chat.disableAIFeatures": true
 }
