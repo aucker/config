@@ -14,18 +14,20 @@ To get started quickly, clone the repository and run the installation script:
 ```bash
 git clone git@github.com:aucker/config.git
 cd config
-./stow-install.sh
+./bin/dotfiles install all
 ```
 
 This will set up the most commonly used configurations in your environment. 
 
 ## How to Add a New Package
 
-To add a new package, create a directory for it in the appropriate category and install it using `stow-posix.sh`:
+To add a new package, create a directory for it in the appropriate category,
+add it to the relevant file under `profiles/`, and install it with the unified
+dotfiles command:
 
 ```bash
 mkdir -p shell/mypkg
-./stow-posix.sh install shell/mypkg
+./bin/dotfiles install shell/mypkg
 ```
 
 ## Example Screenshots
@@ -55,13 +57,19 @@ Legend:
 
 ### Unix-like Systems (Linux, macOS, WSL)
 
-Use the main stow installation script:
+Use the unified dotfiles command. `all` selects `profiles/macos`,
+`profiles/linux`, or `profiles/wsl` based on the current platform:
 
 ```bash
-./stow-install.sh
+./bin/dotfiles install all
 ```
 
-This script will install dotfiles from the `shell/`, `editor/`, `terminal/`, and `server/` directories using GNU Stow.
+Preview an operation or inspect package state without changing files:
+
+```bash
+./bin/dotfiles --dry-run install @macos
+./bin/dotfiles status all
+```
 
 ### Windows
 
@@ -77,15 +85,13 @@ This script handles Windows-specific configurations from the `windows/` director
 - Starship config → `$env:USERPROFILE\.config\starship.toml`
 - VS Code settings → `$env:APPDATA\Code\User\`
 
-**Note:** The main `stow-install.sh` script ignores the `windows/` directory completely and includes a guard to prevent execution in Windows environments.
+**Note:** `bin/dotfiles` manages POSIX packages only. Windows configurations
+continue to use `stow-windows.ps1`.
 
 ## Directory Structure
 
 - `shell/` - Shell configurations (fish, git, etc.)
 - `editor/` - Editor configurations (nvim, vscode, etc.)
 - `terminal/` - Terminal configurations (alacritty, etc.)
-- `server/` - Server-specific configurations
+- `profiles/` - Explicit macOS, Linux, and WSL package selections
 - `windows/` - Windows-only configurations (handled by `stow-windows.ps1`)
-
-w-windows.ps1`)
-

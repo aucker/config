@@ -33,6 +33,7 @@ jobs:
           sudo mv shfmt /usr/local/bin/
       - name: Check shell script formatting
         run: |
+          shfmt -d -i 4 -ci bin/dotfiles
           find . -name "*.sh" -not -path "./.git/*" -print0 | xargs -0 -r shfmt -d -i 4 -ci
 
   test:
@@ -46,7 +47,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y stow
-      - name: Test stow-posix.sh help
-        run: ./stow-posix.sh --help
-      - name: Test stow-posix.sh status
-        run: ./stow-posix.sh status
+      - name: Check dotfiles command syntax
+        run: bash -n bin/dotfiles tests/test-dotfiles.sh
+      - name: Run dotfiles integration tests
+        run: ./tests/test-dotfiles.sh

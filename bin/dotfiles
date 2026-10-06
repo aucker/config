@@ -1,0 +1,658 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+
+readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+readonly REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd -P)"
+readonly PROFILES_DIR="$REPO_ROOT/profiles"
+readonly PROGRAM_NAME="dotfiles"
+readonly VERSION="2.0.0"
+
+TARGET="${DOTFILES_TARGET:-${HOME}}"
+PROFILE_OVERRIDE=""
+DRY_RUN=0
+VERBOSE=0
+ASSUME_YES=0
+
+SELECTED_PACKAGES=()
+MANIFEST=()
+STATE_TOTAL=0
+STATE_INSTALLED=0
+STATE_MISSING=0
+STATE_CONFLICTS=0
+
+usage() {
+    cat <<'EOF'
+dotfiles - manage this repository with GNU Stow
+
+Usage:
+  dotfiles [options] install PACKAGE...|all|@PROFILE
+  dotfiles [options] uninstall PACKAGE...|all|@PROFILE
+  dotfiles [options] status [PACKAGE...|all|@PROFILE]
+  dotfiles [options] adopt PACKAGE
+  dotfiles list
+  dotfiles help
+
+Options:
+  -n, --dry-run       Ask GNU Stow to simulate the operation
+  -v, --verbose       Show GNU Stow output for successful operations
+  -t, --target DIR    Target directory (default: $HOME)
+  -p, --profile NAME  Use NAME when resolving "all"
+  -y, --yes           Required before an adopt operation may modify files
+  -h, --help          Show this help
+      --version       Show the version
+
+Package selection:
+  shell/shell-zsh     Select one package by its repository-relative ID
+  @macos              Select every package in profiles/macos
+  all                 Select the detected OS profile, or --profile NAME
+
+Examples:
+  dotfiles install all
+  dotfiles -n install @linux
+  dotfiles status shell/shell-zsh
+  dotfiles uninstall editor/editor-vim
+  dotfiles -y adopt shell/shell-git
+
+Adoption is intentionally strict: it accepts exactly one package, refuses a
+dirty repository, previews the Stow transaction, and creates a backup before
+modifying package or target files.
+EOF
+}
+
+error() {
+    printf 'ERROR: %s\n' "$*" >&2
+}
+
+info() {
+    printf '%s\n' "$*"
+}
+
+require_command() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        error "Required command not found: $1"
+        return 1
+    fi
+}
+
+detect_profile() {
+    case "$(uname -s)" in
+        Darwin)
+            printf 'macos\n'
+            ;;
+        Linux)
+            if grep -qi microsoft /proc/version /proc/sys/kernel/osrelease 2>/dev/null; then
+                printf 'wsl\n'
+            else
+                printf 'linux\n'
+            fi
+            ;;
+        *)
+            error "No default profile for $(uname -s); specify @PROFILE"
+            return 1
+            ;;
+    esac
+}
+
+validate_package_id() {
+    local package_id="$1"
+    if [[ ! "$package_id" =~ ^[[:alnum:]_.-]+/[[:alnum:]_.-]+$ ]]; then
+        error "Invalid package ID '$package_id'; expected category/package"
+        return 1
+    fi
+}
+
+add_package() {
+    local package_id="$1"
+    local existing
+
+    validate_package_id "$package_id" || return 1
+    for existing in "${SELECTED_PACKAGES[@]}"; do
+        if [[ "$existing" == "$package_id" ]]; then
+            return 0
+        fi
+    done
+    SELECTED_PACKAGES+=("$package_id")
+}
+
+load_profile() {
+    local profile="$1"
+    local profile_file="$PROFILES_DIR/$profile"
+    local line
+
+    if [[ ! -f "$profile_file" ]]; then
+        error "Profile not found: $profile"
+        return 1
+    fi
+
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        line="${line%%#*}"
+        line="${line#"${line%%[![:space:]]*}"}"
+        line="${line%"${line##*[![:space:]]}"}"
+        [[ -z "$line" ]] && continue
+        add_package "$line" || return 1
+    done <"$profile_file"
+}
+
+resolve_selection() {
+    local spec
+    local profile
+
+    SELECTED_PACKAGES=()
+    for spec in "$@"; do
+        case "$spec" in
+            all)
+                profile="$PROFILE_OVERRIDE"
+                if [[ -z "$profile" ]]; then
+                    profile="$(detect_profile)" || return 1
+                fi
+                load_profile "$profile" || return 1
+                ;;
+            @*)
+                load_profile "${spec#@}" || return 1
+                ;;
+            *)
+                add_package "$spec" || return 1
+                ;;
+        esac
+    done
+
+    if [[ ${#SELECTED_PACKAGES[@]} -eq 0 ]]; then
+        error "No packages selected"
+        return 1
+    fi
+}
+
+package_parts() {
+    local package_id="$1"
+    PACKAGE_CATEGORY="${package_id%%/*}"
+    PACKAGE_NAME="${package_id#*/}"
+    PACKAGE_DIRECTORY="$REPO_ROOT/$package_id"
+    STOW_DIRECTORY="$REPO_ROOT/$PACKAGE_CATEGORY"
+}
+
+require_package_directory() {
+    local package_id="$1"
+    package_parts "$package_id"
+    if [[ ! -d "$PACKAGE_DIRECTORY" ]]; then
+        error "Package directory not found: $package_id"
+        return 1
+    fi
+}
+
+require_target_directory() {
+    if [[ ! -d "$TARGET" ]]; then
+        error "Target directory does not exist: $TARGET"
+        return 1
+    fi
+}
+
+indent_output() {
+    local output="$1"
+    [[ -z "$output" ]] && return 0
+    while IFS= read -r line; do
+        printf '    %s\n' "$line"
+    done <<<"$output"
+}
+
+run_stow() {
+    local action="$1"
+    local package_id="$2"
+    local simulate="$3"
+    local output
+    local rc
+    local args
+
+    package_parts "$package_id"
+    args=(--dir="$STOW_DIRECTORY" --target="$TARGET" --no-folding --verbose=1)
+
+    case "$action" in
+        install) ;;
+        uninstall) args+=(--delete) ;;
+        adopt) args+=(--adopt) ;;
+        *)
+            error "Internal error: unknown Stow action '$action'"
+            return 1
+            ;;
+    esac
+
+    if [[ "$simulate" -eq 1 ]]; then
+        args+=(--simulate)
+    fi
+    if [[ "$VERBOSE" -eq 1 ]]; then
+        args+=(--verbose=2)
+    fi
+
+    if output=$(stow "${args[@]}" "$PACKAGE_NAME" 2>&1); then
+        rc=0
+    else
+        rc=$?
+    fi
+
+    if [[ "$rc" -eq 0 ]]; then
+        if [[ "$simulate" -eq 1 ]]; then
+            info "[dry-run] $action $package_id"
+            indent_output "$output"
+        else
+            info "OK: $action $package_id"
+            if [[ "$VERBOSE" -eq 1 ]]; then
+                indent_output "$output"
+            fi
+        fi
+        return 0
+    fi
+
+    if grep -q 'would cause conflicts' <<<"$output"; then
+        error "$action conflict in $package_id"
+    else
+        error "$action failed for $package_id (Stow exit $rc)"
+    fi
+    indent_output "$output" >&2
+    return "$rc"
+}
+
+preflight_packages() {
+    local package_id
+    local failed=0
+
+    for package_id in "${SELECTED_PACKAGES[@]}"; do
+        if ! require_package_directory "$package_id"; then
+            failed=1
+        fi
+    done
+    return "$failed"
+}
+
+command_install_or_uninstall() {
+    local action="$1"
+    shift
+    local package_id
+    local succeeded=0
+    local failed=0
+
+    if [[ $# -eq 0 ]]; then
+        error "$action requires a package, all, or @PROFILE"
+        return 2
+    fi
+
+    require_command stow || return 1
+    require_target_directory || return 1
+    resolve_selection "$@" || return 2
+    preflight_packages || return 1
+
+    for package_id in "${SELECTED_PACKAGES[@]}"; do
+        if run_stow "$action" "$package_id" "$DRY_RUN"; then
+            succeeded=$((succeeded + 1))
+        else
+            failed=$((failed + 1))
+        fi
+    done
+
+    printf '\nSummary: %d succeeded, %d failed\n' "$succeeded" "$failed"
+    [[ "$failed" -eq 0 ]]
+}
+
+canonical_path() {
+    local path="$1"
+    local link
+    local directory
+    local hops=0
+
+    while [[ -L "$path" ]]; do
+        link="$(readlink "$path")" || return 1
+        if [[ "$link" == /* ]]; then
+            path="$link"
+        else
+            path="$(dirname -- "$path")/$link"
+        fi
+        hops=$((hops + 1))
+        if [[ "$hops" -gt 40 ]]; then
+            return 1
+        fi
+    done
+
+    directory="$(cd -P -- "$(dirname -- "$path")" 2>/dev/null && pwd -P)" || return 1
+    printf '%s/%s\n' "$directory" "$(basename -- "$path")"
+}
+
+link_matches_source() {
+    local target_path="$1"
+    local source_path="$2"
+    local target_resolved
+    local source_resolved
+
+    [[ -L "$target_path" ]] || return 1
+    target_resolved="$(canonical_path "$target_path")" || return 1
+    source_resolved="$(canonical_path "$source_path")" || return 1
+    [[ "$target_resolved" == "$source_resolved" ]]
+}
+
+build_manifest() {
+    local package_id="$1"
+    local empty_target="$2"
+    local output
+    local rc
+    local line
+    local relative_path
+
+    MANIFEST=()
+    require_package_directory "$package_id" || return 1
+    package_parts "$package_id"
+
+    if output=$(stow --dir="$STOW_DIRECTORY" --target="$empty_target" \
+        --no-folding --simulate --verbose=1 "$PACKAGE_NAME" 2>&1); then
+        rc=0
+    else
+        rc=$?
+    fi
+    if [[ "$rc" -ne 0 ]]; then
+        error "Cannot build manifest for $package_id"
+        indent_output "$output" >&2
+        return "$rc"
+    fi
+
+    while IFS= read -r line; do
+        case "$line" in
+            'LINK: '*)
+                relative_path="${line#LINK: }"
+                relative_path="${relative_path%% => *}"
+                MANIFEST+=("$relative_path")
+                ;;
+        esac
+    done <<<"$output"
+
+    if [[ ${#MANIFEST[@]} -eq 0 ]]; then
+        error "Package has no Stow-managed files: $package_id"
+        return 1
+    fi
+}
+
+inspect_package() {
+    local package_id="$1"
+    local empty_target="$2"
+    local relative_path
+    local source_path
+    local target_path
+
+    build_manifest "$package_id" "$empty_target" || return 1
+    STATE_TOTAL=${#MANIFEST[@]}
+    STATE_INSTALLED=0
+    STATE_MISSING=0
+    STATE_CONFLICTS=0
+
+    for relative_path in "${MANIFEST[@]}"; do
+        source_path="$REPO_ROOT/$package_id/$relative_path"
+        target_path="$TARGET/$relative_path"
+        if link_matches_source "$target_path" "$source_path"; then
+            STATE_INSTALLED=$((STATE_INSTALLED + 1))
+        elif [[ -e "$target_path" || -L "$target_path" ]]; then
+            STATE_CONFLICTS=$((STATE_CONFLICTS + 1))
+        else
+            STATE_MISSING=$((STATE_MISSING + 1))
+        fi
+    done
+}
+
+status_label() {
+    if [[ "$STATE_INSTALLED" -eq "$STATE_TOTAL" ]]; then
+        printf 'installed'
+    elif [[ "$STATE_CONFLICTS" -gt 0 ]]; then
+        printf 'conflict'
+    elif [[ "$STATE_INSTALLED" -gt 0 ]]; then
+        printf 'partial'
+    else
+        printf 'not installed'
+    fi
+}
+
+command_status() {
+    local package_id
+    local empty_target
+    local label
+    local internal_failures=0
+
+    require_command stow || return 1
+    require_target_directory || return 1
+    if [[ $# -eq 0 ]]; then
+        set -- all
+    fi
+    resolve_selection "$@" || return 2
+
+    empty_target="$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-status.XXXXXX")" || return 1
+    printf '%-34s %-15s %s\n' 'PACKAGE' 'STATUS' 'DETAILS'
+    printf '%-34s %-15s %s\n' '-------' '------' '-------'
+
+    for package_id in "${SELECTED_PACKAGES[@]}"; do
+        if [[ ! -d "$REPO_ROOT/$package_id" ]]; then
+            printf '%-34s %-15s %s\n' "$package_id" 'absent' 'package directory missing'
+            continue
+        fi
+        if inspect_package "$package_id" "$empty_target"; then
+            label="$(status_label)"
+            printf '%-34s %-15s %d/%d linked, %d missing, %d conflicts\n' \
+                "$package_id" "$label" "$STATE_INSTALLED" "$STATE_TOTAL" \
+                "$STATE_MISSING" "$STATE_CONFLICTS"
+        else
+            printf '%-34s %-15s %s\n' "$package_id" 'error' 'manifest inspection failed'
+            internal_failures=$((internal_failures + 1))
+        fi
+    done
+
+    rmdir "$empty_target" 2>/dev/null || true
+    [[ "$internal_failures" -eq 0 ]]
+}
+
+repository_is_clean() {
+    local status_output
+    status_output="$(git -C "$REPO_ROOT" status --porcelain --untracked-files=all)" || return 1
+    if [[ -n "$status_output" ]]; then
+        error 'Adopt requires a clean repository. Current changes:'
+        indent_output "$status_output" >&2
+        return 1
+    fi
+}
+
+create_adopt_backup() {
+    local package_id="$1"
+    local relative_path
+    local source
+    local destination
+    local state_root="${XDG_STATE_HOME:-${HOME}/.local/state}"
+    local backup_base="${DOTFILES_BACKUP_DIR:-$state_root/dotfiles/backups}"
+    local stamp
+    local safe_package="${package_id//\//-}"
+
+    stamp="$(date -u '+%Y%m%dT%H%M%SZ')-$$"
+    ADOPT_BACKUP="$backup_base/$stamp-$safe_package"
+    mkdir -p "$ADOPT_BACKUP/package" "$ADOPT_BACKUP/target" || return 1
+    cp -a "$REPO_ROOT/$package_id/." "$ADOPT_BACKUP/package/" || return 1
+
+    for relative_path in "${MANIFEST[@]}"; do
+        source="$TARGET/$relative_path"
+        if [[ -e "$source" || -L "$source" ]]; then
+            destination="$ADOPT_BACKUP/target/$relative_path"
+            mkdir -p "$(dirname -- "$destination")" || return 1
+            cp -a "$source" "$destination" || return 1
+        fi
+    done
+}
+
+command_adopt() {
+    local package_id
+    local empty_target
+    local preview
+    local rc
+    local diff_output
+
+    if [[ $# -ne 1 || "$1" == 'all' || "$1" == @* ]]; then
+        error 'adopt requires exactly one explicit category/package ID'
+        return 2
+    fi
+    package_id="$1"
+
+    require_command stow || return 1
+    require_command git || return 1
+    require_target_directory || return 1
+    validate_package_id "$package_id" || return 2
+    require_package_directory "$package_id" || return 1
+    repository_is_clean || return 1
+
+    empty_target="$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-adopt.XXXXXX")" || return 1
+    if ! inspect_package "$package_id" "$empty_target"; then
+        rmdir "$empty_target" 2>/dev/null || true
+        return 1
+    fi
+    rmdir "$empty_target" 2>/dev/null || true
+
+    if [[ "$STATE_CONFLICTS" -eq 0 ]]; then
+        info "Nothing to adopt for $package_id: no conflicting target files"
+        return 0
+    fi
+
+    package_parts "$package_id"
+    if preview=$(stow --dir="$STOW_DIRECTORY" --target="$TARGET" --no-folding \
+        --adopt --simulate --verbose=2 "$PACKAGE_NAME" 2>&1); then
+        rc=0
+    else
+        rc=$?
+    fi
+    info "Adopt preview for $package_id:"
+    indent_output "$preview"
+    if [[ "$rc" -ne 0 ]]; then
+        error "Adopt preview failed (Stow exit $rc)"
+        return "$rc"
+    fi
+
+    if [[ "$DRY_RUN" -eq 1 ]]; then
+        info 'Dry run complete; no files were changed.'
+        return 0
+    fi
+    if [[ "$ASSUME_YES" -ne 1 ]]; then
+        error 'Adopt preview only. Re-run with --yes to create a backup and apply it.'
+        return 2
+    fi
+
+    create_adopt_backup "$package_id" || {
+        error 'Could not create adoption backup; no Stow changes were attempted.'
+        return 1
+    }
+    info "Backup created: $ADOPT_BACKUP"
+
+    if ! run_stow adopt "$package_id" 0; then
+        error "Adopt failed. Recovery files are available at $ADOPT_BACKUP"
+        return 1
+    fi
+
+    info 'Repository changes after adoption:'
+    diff_output="$(git -C "$REPO_ROOT" status --short -- "$package_id"; \
+        git -C "$REPO_ROOT" diff -- "$package_id")"
+    if [[ -n "$diff_output" ]]; then
+        indent_output "$diff_output"
+    else
+        info '    (no tracked changes)'
+    fi
+}
+
+command_list() {
+    local profile_file
+    local profile
+    local line
+
+    printf 'Profiles:\n'
+    for profile_file in "$PROFILES_DIR"/*; do
+        [[ -f "$profile_file" ]] || continue
+        profile="$(basename -- "$profile_file")"
+        printf '  @%s\n' "$profile"
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            line="${line%%#*}"
+            line="${line#"${line%%[![:space:]]*}"}"
+            line="${line%"${line##*[![:space:]]}"}"
+            [[ -z "$line" ]] || printf '    %s\n' "$line"
+        done <"$profile_file"
+    done
+}
+
+main() {
+    local command_name
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -n | --dry-run)
+                DRY_RUN=1
+                shift
+                ;;
+            -v | --verbose)
+                VERBOSE=1
+                shift
+                ;;
+            -y | --yes)
+                ASSUME_YES=1
+                shift
+                ;;
+            -t | --target)
+                if [[ $# -lt 2 ]]; then
+                    error "$1 requires a directory"
+                    return 2
+                fi
+                TARGET="$2"
+                shift 2
+                ;;
+            --target=*)
+                TARGET="${1#*=}"
+                shift
+                ;;
+            -p | --profile)
+                if [[ $# -lt 2 ]]; then
+                    error "$1 requires a profile name"
+                    return 2
+                fi
+                PROFILE_OVERRIDE="$2"
+                shift 2
+                ;;
+            --profile=*)
+                PROFILE_OVERRIDE="${1#*=}"
+                shift
+                ;;
+            -h | --help)
+                usage
+                return 0
+                ;;
+            --version)
+                printf '%s %s\n' "$PROGRAM_NAME" "$VERSION"
+                return 0
+                ;;
+            --)
+                shift
+                break
+                ;;
+            -*)
+                error "Unknown option: $1"
+                return 2
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    command_name="${1:-help}"
+    if [[ $# -gt 0 ]]; then
+        shift
+    fi
+
+    case "$command_name" in
+        install) command_install_or_uninstall install "$@" ;;
+        uninstall) command_install_or_uninstall uninstall "$@" ;;
+        status) command_status "$@" ;;
+        adopt) command_adopt "$@" ;;
+        list) command_list ;;
+        help) usage ;;
+        *)
+            error "Unknown command: $command_name"
+            usage >&2
+            return 2
+            ;;
+    esac
+}
+
+main "$@"

@@ -1,0 +1,7 @@
+# Packages installed inside Windows Subsystem for Linux.
+core/core-config
+shell/shell-git
+shell/shell-zsh
+shell/shell-fish
+editor/editor-vim
+editor/editor-nvim

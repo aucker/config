@@ -1,0 +1,8 @@
+# Packages installed on a native Linux workstation.
+core/core-config
+shell/shell-git
+shell/shell-zsh
+shell/shell-fish
+editor/editor-vim
+editor/editor-nvim
+terminal/terminal-alacritty
