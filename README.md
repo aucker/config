@@ -29,6 +29,12 @@ mkdir -p packages/mypkg
 ./bin/dotfiles install mypkg
 ```
 
+When adding or removing managed files, update `tests/fixtures/managed-files.tsv`
+and the expected profile selections in `tests/test-dotfiles.sh`. Verify changes
+with `./tests/test-dotfiles.sh` (Bash, Git, and GNU Stow required). The suite uses
+temporary target directories. Run `bash tests/test-secret-loading.sh` as well
+for shell credential changes; it requires Fish and Zsh and uses offline stores.
+
 ## Example Screenshots
 
 Here's a status output example showing installed packages:

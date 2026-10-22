@@ -127,13 +127,18 @@ by its ID when deciding what to work on next.
   - Add status, dry-run, uninstall, and consistent conflict handling to the
     PowerShell installer.
   - Keep Windows path mappings explicit and testable.
+  - Deferred at the user's request; no Windows runtime or tests are required
+    for the current macOS/Linux verification work.
 
 ## Priority 4: Verification and Documentation
 
-- [ ] **TEST-01 — Add real Stow integration tests**
+- [x] **TEST-01 — Add real Stow integration tests**
   - Install into a temporary home directory in CI.
   - Verify every expected symlink.
   - Exercise conflicts, partial installs, uninstall, and idempotent re-runs.
+  - Verify macOS, Linux, and WSL profile links against an independent fixture,
+    including paths with spaces and preservation of local files on uninstall.
+  - Run integration tests on both Linux and macOS CI runners.
 
 - [ ] **TEST-02 — Validate each configuration format**
   - Check Bash, Zsh, Fish, PowerShell, Lua, TOML, YAML, and VS Code JSONC where

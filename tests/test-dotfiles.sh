@@ -33,6 +33,28 @@ assert_link() {
     [[ -L "$path" ]] || fail "expected symlink: $path"
 }
 
+assert_profile_links() {
+    local target="$1"
+    local selection=" $2 "
+    local package_id
+    local relative_path
+    local expected_count=0
+    local actual_count
+
+    while IFS=$'\t' read -r package_id relative_path; do
+        [[ "$package_id" == \#* || -z "$package_id" ]] && continue
+        [[ "$selection" == *" $package_id "* ]] || continue
+        assert_link "$target/$relative_path"
+        [[ "$target/$relative_path" -ef "$REPO_ROOT/packages/$package_id/$relative_path" ]] || \
+            fail "link does not resolve to its package source: $relative_path"
+        expected_count=$((expected_count + 1))
+    done <"$TEST_DIR/fixtures/managed-files.tsv"
+
+    actual_count="$(find "$target" -type l | wc -l | tr -d '[:space:]')"
+    [[ "$actual_count" -eq "$expected_count" ]] || \
+        fail "expected $expected_count managed links, found $actual_count"
+}
+
 printf 'Test: command works outside the repository\n'
 output="$(cd "$TEST_ROOT" && "$DOTFILES" --target "$TARGET" status core)" || fail 'initial status command failed'
 assert_contains "$output" 'not installed'
@@ -63,6 +85,7 @@ assert_contains "$output" 'conflict'
 if "$DOTFILES" --target "$TARGET" install core >/dev/null 2>&1; then
     fail 'conflicting install unexpectedly succeeded'
 fi
+[[ "$(<"$TARGET/.editorconfig")" == 'local conflict' ]] || fail 'install changed the conflicting regular file'
 
 printf 'Test: uninstall and idempotent install\n'
 rm -- "$TARGET/.editorconfig"
@@ -72,6 +95,29 @@ rm -- "$TARGET/.editorconfig"
 [[ ! -e "$TARGET/.editorconfig" ]] || fail 'uninstall left .editorconfig'
 [[ ! -e "$TARGET/.clang-format" ]] || fail 'uninstall left .clang-format'
 
+printf 'Test: dangling foreign links are conflicts and remain untouched\n'
+ln -s "$TEST_ROOT/missing-foreign-file" "$TARGET/.editorconfig"
+output="$("$DOTFILES" --target "$TARGET" status core)" || fail 'dangling-link status failed'
+assert_contains "$output" 'conflict'
+if "$DOTFILES" --target "$TARGET" install core >/dev/null 2>&1; then
+    fail 'install unexpectedly replaced a foreign dangling symlink'
+fi
+[[ "$(readlink "$TARGET/.editorconfig")" == "$TEST_ROOT/missing-foreign-file" ]] || fail 'foreign link was modified'
+[[ ! -e "$TARGET/.clang-format" ]] || fail 'conflicting package was partially installed'
+rm -- "$TARGET/.editorconfig"
+
+printf 'Test: mixed package failures return accurate counters\n'
+printf 'keep this file\n' >"$TARGET/.editorconfig"
+if output="$("$DOTFILES" --target "$TARGET" install core tmux 2>&1)"; then
+    fail 'mixed install returned success despite a conflict'
+fi
+assert_contains "$output" '1 succeeded, 1 failed'
+assert_link "$TARGET/.tmux.conf"
+[[ ! -e "$TARGET/.clang-format" ]] || fail 'conflicting package was partially installed'
+[[ "$(<"$TARGET/.editorconfig")" == 'keep this file' ]] || fail 'mixed install changed the conflicting regular file'
+"$DOTFILES" --target "$TARGET" uninstall tmux >/dev/null || fail 'tmux fixture cleanup failed'
+rm -- "$TARGET/.editorconfig"
+
 printf 'Test: explicit profiles include packages omitted by old discovery\n'
 output="$("$DOTFILES" list)" || fail 'list failed'
 assert_contains "$output" '@macos'
@@ -80,12 +126,63 @@ assert_contains "$output" 'vscode-macos'
 assert_contains "$output" 'powershell'
 assert_contains "$output" 'core'
 
-printf 'Test: platform profiles keep platform-only paths isolated\n'
-LINUX_TARGET="$TEST_ROOT/linux-home"
-mkdir -p "$LINUX_TARGET"
-"$DOTFILES" --target "$LINUX_TARGET" install @linux >/dev/null || fail 'Linux profile install failed'
-[[ ! -e "$LINUX_TARGET/Library" ]] || fail 'Linux profile created a macOS Library path'
-"$DOTFILES" --target "$LINUX_TARGET" uninstall @linux >/dev/null || fail 'Linux profile uninstall failed'
+for profile in macos linux wsl; do
+    printf 'Test: %s profile lifecycle verifies every managed link\n' "$profile"
+    PROFILE_TARGET="$TEST_ROOT/$profile home with spaces"
+    mkdir -p "$PROFILE_TARGET"
+    case "$profile" in
+        macos)
+            expected_packages='core git zsh fish tmux vim nvim vscode-macos alacritty'
+            ;;
+        linux)
+            expected_packages='core git zsh fish tmux vim nvim alacritty'
+            ;;
+        wsl)
+            expected_packages='core git zsh fish tmux vim nvim'
+            ;;
+    esac
+
+    "$DOTFILES" --dry-run --target "$PROFILE_TARGET" install "@$profile" >/dev/null || fail "$profile profile dry-run failed"
+    [[ -z "$(find "$PROFILE_TARGET" -mindepth 1 -print -quit)" ]] || fail "$profile dry-run modified the target"
+    "$DOTFILES" --target "$PROFILE_TARGET" install "@$profile" >/dev/null || fail "$profile profile install failed"
+    assert_profile_links "$PROFILE_TARGET" "$expected_packages"
+    "$DOTFILES" --target "$PROFILE_TARGET" install "@$profile" >/dev/null || fail "$profile repeated install failed"
+    assert_profile_links "$PROFILE_TARGET" "$expected_packages"
+    output="$("$DOTFILES" --target "$PROFILE_TARGET" status "@$profile")" || fail "$profile profile status failed"
+    while read -r package_id state details; do
+        [[ " $expected_packages " == *" $package_id "* ]] || continue
+        [[ "$state" == installed && "$details" == *'0 missing, 0 conflicts' ]] || fail "$profile package is not fully installed: $package_id"
+    done <<<"$output"
+
+    if [[ "$profile" != macos ]]; then
+        [[ ! -e "$PROFILE_TARGET/Library" ]] || fail "$profile profile created a macOS Library path"
+    fi
+    if [[ "$profile" == wsl ]]; then
+        [[ ! -e "$PROFILE_TARGET/.config/alacritty" ]] || fail 'WSL profile unexpectedly installed Alacritty'
+    fi
+
+    "$DOTFILES" --dry-run --target "$PROFILE_TARGET" uninstall "@$profile" >/dev/null || fail "$profile uninstall dry-run failed"
+    assert_profile_links "$PROFILE_TARGET" "$expected_packages"
+
+    # Host-owned regular files and unrelated symlinks must survive uninstall.
+    for local_file in .config/fish/local.fish .config/fish/secrets.local.fish .config/zsh/local.zsh .config/zsh/secrets.local.zsh .config/git/config.local; do
+        printf '# keep local settings\n' >"$PROFILE_TARGET/$local_file"
+    done
+    ln -s "$REPO_ROOT/README.md" "$PROFILE_TARGET/.unrelated-link"
+    "$DOTFILES" --target "$PROFILE_TARGET" uninstall "@$profile" >/dev/null || fail "$profile profile uninstall failed"
+    "$DOTFILES" --target "$PROFILE_TARGET" uninstall "@$profile" >/dev/null || fail "$profile repeated uninstall failed"
+    while IFS=$'\t' read -r package_id relative_path; do
+        [[ "$package_id" == \#* || -z "$package_id" ]] && continue
+        [[ " $expected_packages " == *" $package_id "* ]] || continue
+        [[ ! -e "$PROFILE_TARGET/$relative_path" && ! -L "$PROFILE_TARGET/$relative_path" ]] || fail "uninstall left a managed path: $relative_path"
+    done <"$TEST_DIR/fixtures/managed-files.tsv"
+    for local_file in .config/fish/local.fish .config/fish/secrets.local.fish .config/zsh/local.zsh .config/zsh/secrets.local.zsh .config/git/config.local; do
+        [[ -f "$PROFILE_TARGET/$local_file" && ! -L "$PROFILE_TARGET/$local_file" ]] || fail "uninstall removed a local file: $local_file"
+        [[ "$(<"$PROFILE_TARGET/$local_file")" == '# keep local settings' ]] || fail "uninstall changed a local file: $local_file"
+    done
+    [[ "$(readlink "$PROFILE_TARGET/.unrelated-link")" == "$REPO_ROOT/README.md" ]] || fail 'uninstall changed an unrelated link'
+done
+
 if output="$("$DOTFILES" --target "$TARGET" status @windows 2>&1)"; then
     fail 'POSIX command unexpectedly accepted the Windows profile'
 fi
@@ -121,7 +218,7 @@ output="$(git config --file "$GIT_TARGET/.config/git/config" --includes --get pu
 [[ -f "$GIT_TARGET/.config/git/config.local" && ! -L "$GIT_TARGET/.config/git/config.local" ]] || fail 'uninstall removed the host Git configuration'
 
 printf 'Test: adopt guards, previews, backs up, applies, and shows a diff\n'
-ADOPT_REPO="$TEST_ROOT/adopt-repo"
+ADOPT_REPO="$TEST_ROOT/adopt repo with spaces"
 ADOPT_TARGET="$TEST_ROOT/adopt-home"
 ADOPT_BACKUPS="$TEST_ROOT/adopt-backups"
 mkdir -p "$ADOPT_REPO/bin" "$ADOPT_REPO/packages/sample" "$ADOPT_TARGET"
@@ -131,6 +228,7 @@ git -C "$ADOPT_REPO" init -q
 git -C "$ADOPT_REPO" config user.name 'Dotfiles Test'
 git -C "$ADOPT_REPO" config user.email 'dotfiles-test@example.invalid'
 git -C "$ADOPT_REPO" config commit.gpgsign false
+git -C "$ADOPT_REPO" config core.hooksPath "$TEST_ROOT/no-test-hooks"
 git -C "$ADOPT_REPO" add bin/dotfiles packages/sample/.example
 git -C "$ADOPT_REPO" commit -qm 'test fixture'
 printf 'target version\n' >"$ADOPT_TARGET/.example"

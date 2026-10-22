@@ -1,0 +1,38 @@
+# Package<TAB>managed path relative to the target home.
+core	.clang-format
+core	.editorconfig
+git	.config/git/attributes
+git	.config/git/config
+git	.config/git/config.local.example
+git	.config/git/hooks/pre-commit
+git	.config/git/ignore
+zsh	.zshenv
+zsh	.config/zsh/.zshrc
+zsh	.config/zsh/cspell.json
+zsh	.config/zsh/fish_compat.zsh
+zsh	.config/zsh/function.zsh
+zsh	.config/zsh/local.zsh.example
+zsh	.config/zsh/secret-loader.zsh
+zsh	.config/zsh/secrets.local.zsh.example
+zsh	.config/zsh/tabtab/pnpm.zsh
+fish	.config/fish/config.fish
+fish	.config/fish/local.fish.example
+fish	.config/fish/secrets.local.fish.example
+fish	.config/fish/functions/dotfiles_load_secret.fish
+fish	.config/fish/functions/fish_greeting.fish
+fish	.config/fish/functions/fish_prompt.fish
+fish	.config/fish/functions/fish_user_key_bindings.fish
+fish	.config/fish/functions/fisher.fish
+tmux	.tmux.conf
+vim	.vimrc
+vim	.vimrc_linux
+vim	.vimrc_mac
+nvim	.config/nvim/init.lua
+nvim	.config/nvim/lazy-lock.json
+vscode-macos	Library/Application Support/Code/User/keybindings.json
+vscode-macos	Library/Application Support/Code/User/settings.json
+vscode-macos	Library/Application Support/Code/User/snippets/c.json
+vscode-macos	Library/Application Support/Code/User/snippets/cpp.json
+vscode-macos	Library/Application Support/Code/User/snippets/python.json
+alacritty	.config/alacritty/alacritty.toml
+alacritty	.config/alacritty/themes/alacritty_0_12.toml

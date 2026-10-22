@@ -37,16 +37,24 @@ jobs:
           find . -name "*.sh" -not -path "./.git/*" -print0 | xargs -0 -r shfmt -d -i 4 -ci
 
   test:
-    runs-on: ubuntu-latest
-    name: Basic Tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    name: Integration tests (${{ matrix.os }})
     env:
       TERM: dumb
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y stow fish zsh
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        run: brew install stow fish zsh
       - name: Check dotfiles command syntax
         run: bash -n bin/dotfiles tests/test-dotfiles.sh
       - name: Run dotfiles integration tests
