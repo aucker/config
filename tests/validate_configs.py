@@ -89,6 +89,8 @@ def parse_json(text, *, comments=False):
 
 def file_format(relative):
     path = relative.as_posix()
+    if path == ".gitleaks.toml":
+        return "toml"
     # Archived notes and native Windows validation are deliberately deferred.
     if not path.startswith(("packages/", "tests/", "scripts/", ".github/", "bin/")):
         return None

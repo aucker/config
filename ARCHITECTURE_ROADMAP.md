@@ -149,10 +149,20 @@ by its ID when deciding what to work on next.
   - Add parser regression tests and run validation in macOS/Linux CI.
   - PowerShell validation remains deferred alongside WIN-01.
 
-- [ ] **TEST-03 — Add secret scanning**
+- [x] **TEST-03 — Add secret scanning**
   - Reject newly committed API keys, private keys, passwords, and common cloud
     credentials.
   - Maintain a small allowlist for deliberate variable names and examples.
+  - Added Gitleaks staged/worktree/history checks with value-free findings,
+    exact placeholder exemptions, and real-scanner regression tests.
+  - Integrated staged checks into the managed Git hook; CI scans current files
+    and newly pushed/PR commits using a checksum-verified pinned scanner.
+
+- [ ] **SEC-04 — Rotate the historically exposed WakaTime API key**
+  - Full-history scanning found the same key in VS Code settings in commits
+    `326cca0` and `38f7075`; it is absent from current files.
+  - Revocation/rotation has not been verified. Decide on history cleanup after
+    the credential is disabled; no history baseline hides these findings.
 
 - [ ] **DOC-01 — Replace stale documentation**
   - Rewrite `README.md` around the actual bootstrap and profile workflow.

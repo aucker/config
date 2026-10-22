@@ -50,6 +50,21 @@ executing it, and checks TOML, YAML, strict JSON, VS Code JSONC, and Git config.
 It does not source your shell config or retrieve secrets. Native Windows and
 archived files remain outside this validation scope.
 
+Secret scanning uses [Gitleaks](https://github.com/gitleaks/gitleaks), installed
+with `brew install gitleaks` on macOS or an upstream release on Linux. Run:
+
+```bash
+python3 scripts/check_secrets.py staged
+python3 scripts/check_secrets.py worktree
+python3 scripts/check_secrets.py history
+python3 -B tests/test_secret_scanning.py
+```
+
+The managed Git hook checks staged changes in this repository after formatting.
+It requires Python 3 and Gitleaks and blocks a commit if scanning cannot run.
+CI scans repository files and newly pushed/PR commits. Findings show only file, line,
+and rule; values stay hidden. See [secret scanning and handling findings](docs/secrets.md#secret-scanning).
+
 ## Example Screenshots
 
 Here's a status output example showing installed packages:

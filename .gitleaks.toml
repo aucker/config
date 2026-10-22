@@ -1,0 +1,42 @@
+title = "Personal dotfiles secret detection"
+
+[extend]
+useDefault = true
+
+# Exact example values only; do not exempt entire paths, variable names, or
+# arbitrary strings containing "test" or "example".
+[[allowlists]]
+description = "Non-secret placeholders used in setup examples and offline tests"
+regexTarget = "secret"
+regexes = [
+    '''^YOUR_[A-Z0-9_]+$''',
+    '''^fixture value with spaces$''',
+    '''^fixture value must not be used on failure$''',
+]
+
+# Complement provider-specific and generic API-key rules with quoted literal
+# passwords. Expansions such as "$OS_PASSWORD" are not credential values.
+[[rules]]
+id = "dotfiles-literal-password"
+description = "Quoted literal password assignment"
+regex = '''(?im)^[ \t]*(?:export[ \t]+)?(?:[a-z0-9_]*password|passwd|pwd)[ \t]*[:=][ \t]*["']([^$"'\r\n]{8,})["']'''
+secretGroup = 1
+entropy = 3.0
+keywords = ["password", "passwd", "pwd"]
+
+# Detect a private-key header even before a complete block is staged.
+[[rules]]
+id = "dotfiles-private-key-header"
+description = "Private signing or encryption key material"
+regex = '''-----BEGIN (?:[A-Z0-9]+ )*PRIVATE KEY(?: BLOCK)?-----'''
+keywords = ["PRIVATE KEY"]
+
+# Fish's `set -gx NAME VALUE` has no equals sign, so generic assignment rules
+# miss opaque credentials without a provider-specific prefix.
+[[rules]]
+id = "dotfiles-fish-literal-secret"
+description = "Literal credential in a Fish set command"
+regex = '''(?im)^[ \t]*set[ \t]+(?:--?[a-z-]+[ \t]+)*[a-z0-9_]*(?:api_?key|token|password|passwd|secret)[a-z0-9_]*[ \t]+["']?([^$"'(\r\n]{8,})["']?[ \t]*$'''
+secretGroup = 1
+entropy = 3.0
+keywords = ["set"]

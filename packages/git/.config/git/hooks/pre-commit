@@ -1,8 +1,27 @@
 #!/bin/sh
 #
-# Pre-commit hook that runs clang-format on staged C/C++ files,
-# skipping files in specified ignored folders.
+# Format staged C files and scan opted-in repositories for credentials.
 #
+
+scan_secrets() {
+    repo_root=$(git rev-parse --show-toplevel) || return 1
+    # Opt in per repository; do not impose this policy on unrelated projects.
+    if [ -f "$repo_root/.gitleaks.toml" ] && [ -f "$repo_root/scripts/check_secrets.py" ]; then
+        if ! command -v python3 >/dev/null 2>&1; then
+            echo "Error: Python 3 is required for this repository's secret scan." >&2
+            return 1
+        fi
+        python3 "$repo_root/scripts/check_secrets.py" staged --repo "$repo_root"
+        return $?
+    fi
+    return 0
+}
+
+# Documentation/configuration commits do not require a C formatter.
+if ! git diff --cached --name-only --diff-filter=ACM | grep -Eq '\.(c|h)$'; then
+    scan_secrets
+    exit $?
+fi
 
 # --- Configuration ---
 # Find clang-format
@@ -67,4 +86,6 @@ done
 
 echo "clang-format check finished."
 
-exit 0
+# Formatting can restage files, so inspect the final staged state.
+scan_secrets
+exit $?
