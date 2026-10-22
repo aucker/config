@@ -58,24 +58,12 @@ set -x ANTHROPIC_DEFAULT_HAIKU_MODEL deepseek-v4-flash
 set -x CLAUDE_CODE_SUBAGENT_MODEL deepseek-v4-flash
 set -x CLAUDE_CODE_EFFORT_LEVEL max
 
-function __load_anthropic_token
-    set -l token
-
-    if command -q security
-        set token (security find-generic-password -a $USER -s codex-deepseek-anthropic-token -w 2>/dev/null)
-    end
-
-    # Local fallback: repository Git config is never committed or pushed.
-    if test -z "$token"; and set -q DOTFILES_REPO; and command -q git; and test -d "$DOTFILES_REPO/.git"
-        set token (git -C "$DOTFILES_REPO" config --local --get codexSecrets.anthropicAuthToken 2>/dev/null)
-    end
-
-    if test -n "$token"
-        set -gx ANTHROPIC_AUTH_TOKEN "$token"
-    end
+# Optional per-host mappings contain store references, never secret values.
+if test -r "$__fish_config_dir/secrets.local.fish"
+    source "$__fish_config_dir/secrets.local.fish"
 end
-__load_anthropic_token
-functions -e __load_anthropic_token
+# Missing or locked stores are allowed; an inherited token is preserved.
+dotfiles_load_secret ANTHROPIC_AUTH_TOKEN keychain codex-deepseek-anthropic-token; or true
 
 # Stop using mirror
 # set -x HOMEBREW_NO_AUTO_UPDATE 1

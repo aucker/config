@@ -37,17 +37,13 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-v4-flash
 export CLAUDE_CODE_SUBAGENT_MODEL=deepseek-v4-flash
 export CLAUDE_CODE_EFFORT_LEVEL=max
 
-typeset __anthropic_token
-if (( $+commands[security] )); then
-    __anthropic_token="$(security find-generic-password -a "$USER" -s codex-deepseek-anthropic-token -w 2>/dev/null)"
+# Optional per-host mappings contain store references, never secret values.
+if [[ -r "$ZDOTDIR/secret-loader.zsh" ]]; then
+    source "$ZDOTDIR/secret-loader.zsh"
+    [[ -r "$ZDOTDIR/secrets.local.zsh" ]] && source "$ZDOTDIR/secrets.local.zsh"
+    # Missing or locked stores are allowed; an inherited token is preserved.
+    dotfiles_load_secret ANTHROPIC_AUTH_TOKEN keychain codex-deepseek-anthropic-token || true
 fi
-if [[ -z "$__anthropic_token" && -n "$DOTFILES_REPO" && -d "$DOTFILES_REPO/.git" ]] && (( $+commands[git] )); then
-    __anthropic_token="$(git -C "$DOTFILES_REPO" config --local --get codexSecrets.anthropicAuthToken 2>/dev/null)"
-fi
-if [[ -n "$__anthropic_token" ]]; then
-    export ANTHROPIC_AUTH_TOKEN="$__anthropic_token"
-fi
-unset __anthropic_token
 
 # Autoload
 fpath=($ZSHAREDIR/zsh-completions/src $fpath)

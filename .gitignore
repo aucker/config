@@ -11,3 +11,7 @@ packages/zsh/.config/zsh/local.zsh
 
 # Per-host Git override
 packages/git/.config/git/config.local
+
+# Per-host secret-store mappings
+packages/fish/.config/fish/secrets.local.fish
+packages/zsh/.config/zsh/secrets.local.zsh

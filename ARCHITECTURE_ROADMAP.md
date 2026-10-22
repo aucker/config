@@ -114,10 +114,14 @@ by its ID when deciding what to work on next.
   - Added an optional, final `config.local` include and a commented setup
     example; migrated this Mac's settings while preserving their values.
 
-- [ ] **SEC-03 — Standardize secret loading**
+- [x] **SEC-03 — Standardize secret loading**
   - Use macOS Keychain, `pass`, or 1Password rather than tracked shell files.
   - Provide documented helper functions without storing secret values.
   - Add an example local-secrets file containing names only, never values.
+  - Added matching Fish/Zsh loaders for Keychain and `pass`, with optional
+    reference-only local mapping files and offline failure-path tests.
+  - Migrated this Mac's Anthropic token into Keychain, verified it, and removed
+    the plaintext Git-config fallback.
 
 - [ ] **WIN-01 — Give Windows command parity**
   - Add status, dry-run, uninstall, and consistent conflict handling to the

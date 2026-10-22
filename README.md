@@ -37,7 +37,7 @@ Here's a status output example showing installed packages:
 PACKAGE                            STATUS          DETAILS
 -------                            ------          -------
 git                                installed       5/5 linked, 0 missing, 0 conflicts
-zsh                                installed       6/6 linked, 0 missing, 0 conflicts
+zsh                                installed       9/9 linked, 0 missing, 0 conflicts
 nvim                               installed       2/2 linked, 0 missing, 0 conflicts
 ```
 
@@ -88,6 +88,11 @@ configure a proxy only where one is running. Git also works when the local
 file is absent. Keep authentication secrets in a credential helper or password
 manager. Keep the local file in your home configuration directory, outside the
 Stow package, so it is not installed on other hosts.
+
+Secrets load from macOS Keychain or `pass` through `dotfiles_load_secret`.
+Optional `secrets.local.fish` and `secrets.local.zsh` files map environment names
+to store entries; their installed examples contain no credential values. See
+[secret provisioning and loading](docs/secrets.md) for setup and reload details.
 
 ### Windows
 

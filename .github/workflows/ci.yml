@@ -46,8 +46,10 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y stow
+          sudo apt-get install -y stow fish zsh
       - name: Check dotfiles command syntax
         run: bash -n bin/dotfiles tests/test-dotfiles.sh
       - name: Run dotfiles integration tests
         run: ./tests/test-dotfiles.sh
+      - name: Test secret loading with offline backends
+        run: bash tests/test-secret-loading.sh
