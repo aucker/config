@@ -1,12 +1,71 @@
+# Top-level EditorConfig file
 root = true
 
-# General settings for all files
+# --- Default rules (fallback) ---
 [*]
-end_of_line = lf
-trim_trailing_whitespace = true
-insert_final_newline = true
 charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
 
-[*.{asm,s,S}]
+# --- C / C++ / Header files ---
+[*.{c,cc,cpp,h,hpp}]
+indent_style = space
+indent_size = 2
+continuation_indent_size = 2
+tab_width = 2
+max_line_length = 100
+
+# --- Embedded C (for firmware / EC / low-level code) ---
+[src/embedded/**.c]
+indent_style = space
+indent_size = 4
+
+# --- Rust ---
+[*.rs]
+indent_style = space
+indent_size = 4
+max_line_length = 100
+
+# --- Python ---
+[*.py]
+indent_style = space
+indent_size = 4
+max_line_length = 88
+
+# --- Java ---
+[*.java]
+indent_style = space
+indent_size = 4
+max_line_length = 100
+
+# --- Go ---
+[*.go]
+indent_style = tab
+tab_width = 4
+
+# --- JSON / YAML / TOML / XML ---
+[*.{json,yml,yaml,toml,xml}]
+indent_style = space
+indent_size = 2
+
+# --- JavaScript / TypeScript / HTML / CSS ---
+[*.{js,ts,jsx,tsx,html,css,scss}]
+indent_style = space
+indent_size = 2
+max_line_length = 100
+
+# --- Markdown / Text ---
+[*.{md,txt}]
+trim_trailing_whitespace = false
+
+# --- Makefiles (tab required for recipes) ---
+[Makefile]
+indent_style = tab
+
+# --- Shell scripts ---
+[*.{sh,bash,zsh,fish}]
 indent_style = space
 indent_size = 4

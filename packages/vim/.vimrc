@@ -1,7 +1,3 @@
-" ====================
-" === Editor Setup ===
-" ====================
-
 " ===
 " === System
 " ===
@@ -10,10 +6,9 @@ filetype on
 filetype indent on
 filetype plugin on
 filetype plugin indent on
-set mouse=a
 set encoding=utf-8
 
-" Prevent incorrect backgroung rendering
+" Prevent incorrect background rendering
 let &t_ut=''
 
 " ===
@@ -30,13 +25,15 @@ syntax on
 " === Editor behavior
 " ===
 " Better tab
-set expandtab
+" set expandtab
+set noexpandtab
 set tabstop=2
 set shiftwidth=2
 set softtabstop=2
+set autoindent
 set list
-set listchars=tab:▸\ ,trail:▫
-set scrolloff=5
+set listchars=tab:\|\ ,trail:▫
+set scrolloff=4
 
 " Prevent auto line split
 set wrap
@@ -77,6 +74,7 @@ exec "nohlsearch"
 set incsearch
 set ignorecase
 set smartcase
+set showmatch
 
 
 " ===
@@ -147,6 +145,9 @@ inoremap <C-E> <Esc>5<C-e>a
 " Disabling the default s key
 noremap s <nop>
 
+cnoremap w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
+
+
 " split the screens to up (horizontal), down (horizontal), left (vertical), right (vertical)
 map sk :set nosplitbelow<CR>:split<CR>:set splitbelow<CR>
 map sj :set splitbelow<CR>:split<CR>
@@ -154,10 +155,10 @@ map sh :set nosplitright<CR>:vsplit<CR>:set splitright<CR>
 map sl :set splitright<CR>:vsplit<CR>
 
 " Resize splits with arrow keys
-map <up> :res +5<CR>
-map <down> :res -5<CR>
-map <left> :vertical resize-5<CR>
-map <right> :vertical resize+5<CR>
+" map <up> :res +5<CR>
+" map <down> :res -5<CR>
+" map <left> :vertical resize-5<CR>
+" map <right> :vertical resize+5<CR>
 
 " Place the two screens up and down
 map <LEADER>sc :set spell!<CR>
@@ -165,20 +166,48 @@ map <LEADER>sc :set spell!<CR>
 " Press ` to change case (instead of ~)
 map ` ~
 
+" Clang format Vim Integration
+" if has('python')
+"   map <C-K> :pyf /usr/share/clang/clang-format-14/clang-format.py<cr>
+"   imap <C-K> <c-o>:pyf /usr/share/clang/clang-format-14/clang-format.py<cr>
+" elseif has('python3')
+"   map <C-K> :py3f /usr/share/clang/clang-format-14/clang-format.py<cr>
+"   imap <C-K> <c-o>:py3f /usr/share/clang/clang-format-14/clang-format.py<cr>
+" endif
+
+let g:python3_host_prog="/usr/bin/"
+noremap <C-K> :Autoformat<CR>
+
+" Format when save a file
+function! Formatonsave()
+  let l:formatdiff = 1
+  py3f /opt/homebrew/Cellar/clang-format/18.1.8/share/clang/clang-format.py
+endfunction
+autocmd BufWritePre *.h,*.cc,*.cpp call Formatonsave()
+
+
 " Auto change directory to current dir
 autocmd BufEnter * silent! lcd %:p:h
 
 "The plugs manager
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+"if empty(glob('~/.vim/autoload/plug.vim'))
+"  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+"    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+"  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+"endif
+"
+
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+if empty(glob(data_dir . '/autoload/plug.vim'))
+  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 " Specify a directory for plugins
 " - For Neovim: ~/.local/share/nvim/plugged
 " - Avoid using standard Vim directory names like 'plugin'
-call plug#begin('~/.vim/plugged')
+" call plug#begin('~/.vim/plugged')
+call plug#begin()
 
 " Make sure you use single quotes
 
@@ -191,14 +220,42 @@ Plug 'kien/ctrlp.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
+Plug 'morhetz/gruvbox'
+Plug 'chriskempson/base16-vim'
+
 "Utilities
 Plug 'tpope/vim-commentary' "comment stuff
 Plug 'tpope/vim-surround' "allow me to change { to [
 Plug 'jiangmiao/auto-pairs' "auto complete [] and ()
+Plug 'junegunn/fzf', { 'do': { -> fzf#install()  }  }
 Plug 'junegunn/fzf.vim'
+
+"Format
+Plug 'chiel92/vim-autoformat'
 
 " Initialize plugin system
 call plug#end()
 
 " open NERDTree with nt
 map nt :NERDTreeToggle<CR>
+
+
+" if (match($TERM, "-256color") != -1) && (match($TERM, "screen-256color") == -1)
+"   set termguicolors
+" endif
+
+let base16colorspace=256
+set termguicolors " this is important
+set background=dark
+" let base16colorspace=256
+" let g:base16_shell_path="~/dev/others/base16/templates/nvim/colors"
+" colorscheme base16-atelier-dune
+" colorscheme base16-gruvbox-dark-medium
+let g:gruvbox_termcolors=16
+let g:airline_theme='base16_gruvbox_dark_medium'
+" let &t_ut=''
+" let g:gruvbox_italic=1
+" let g:gruvbox_contrast_dark='soft'
+colorscheme gruvbox
+
+set rtp+=/opt/homebrew/opt/fzf
