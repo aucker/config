@@ -17,34 +17,19 @@ if test "$os" = "Darwin"
         $HOME/.cargo/bin \
         $HOME/go/bin \
         $HOME/.composer/vendor/bin \
-        $HOME/Library/pnpm \
-        /opt/homebrew/opt/postgresql@18/bin \
-        $HOME/.antigravity/antigravity/bin
-
-    # Only let Homebrew use ~/.curlrc while its local proxy is available.
-    if command -q nc; and nc -z 127.0.0.1 7897 2>/dev/null
-        set -gx HOMEBREW_CURLRC 1
-    end
+        $HOME/Library/pnpm
 else if test "$os" = "Linux"
     # Linux specific
+    fish_add_path /home/linuxbrew/.linuxbrew/bin
     fish_add_path $HOME/.local/bin
     fish_add_path $HOME/.cargo/bin
     fish_add_path $HOME/go/bin
-    fish_add_path "/mnt/c/Users/aucker/AppData/Local/Programs/Microsoft VS Code/bin"
-    fish_add_path $HOME/toolchains/clang+llvm-18.1.8-x86_64-linux-gnu-ubuntu-18.04/bin
-    fish_add_path /usr/local/cuda-12.8/bin
-    fish_add_path $HOME/toolchains/cmake-3.31/bin
+end
 
-    # CUDA LD_LIBRARY_PATH
-    set -l cuda_lib_path /usr/local/cuda-12.8/lib64
-    if not contains -- "$cuda_lib_path" $LD_LIBRARY_PATH
-        set -gx LD_LIBRARY_PATH "$cuda_lib_path" $LD_LIBRARY_PATH
-    else
-        set -gx LD_LIBRARY_PATH $LD_LIBRARY_PATH
-    end
-    if not set -q LD_LIBRARY_PATH
-        set -gx LD_LIBRARY_PATH "$cuda_lib_path"
-    end
+# Per-host paths and environment values belong in this untracked file. Start
+# with local.fish.example, which is installed beside this configuration.
+if test -r "$__fish_config_dir/local.fish"
+    source "$__fish_config_dir/local.fish"
 end
 
 # Set default editor
@@ -81,8 +66,8 @@ function __load_anthropic_token
     end
 
     # Local fallback: repository Git config is never committed or pushed.
-    if test -z "$token"; and command -q git; and test -d "$HOME/config/.git"
-        set token (git -C "$HOME/config" config --local --get codexSecrets.anthropicAuthToken 2>/dev/null)
+    if test -z "$token"; and set -q DOTFILES_REPO; and command -q git; and test -d "$DOTFILES_REPO/.git"
+        set token (git -C "$DOTFILES_REPO" config --local --get codexSecrets.anthropicAuthToken 2>/dev/null)
     end
 
     if test -n "$token"

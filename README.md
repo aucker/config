@@ -63,6 +63,16 @@ Preview an operation or inspect package state without changing files:
 ./bin/dotfiles status all
 ```
 
+Host-specific shell paths and environment values are deliberately untracked.
+After installing, copy the relevant example and customize it locally:
+
+```bash
+cp ~/.config/fish/local.fish.example ~/.config/fish/local.fish
+cp ~/.config/zsh/local.zsh.example ~/.config/zsh/local.zsh
+```
+
+The shared Fish and Zsh configurations load these files when present.
+
 ### Windows
 
 Windows users should use the dedicated PowerShell script:

@@ -91,6 +91,15 @@ if output="$("$DOTFILES" --target "$TARGET" status @windows 2>&1)"; then
 fi
 assert_contains "$output" 'managed by stow-windows.ps1'
 
+printf 'Test: shared shell files delegate host-specific settings\n'
+grep -q 'local.fish' "$REPO_ROOT/packages/fish/.config/fish/config.fish" || fail 'Fish local override is not loaded'
+grep -q 'local.zsh' "$REPO_ROOT/packages/zsh/.config/zsh/.zshrc" || fail 'Zsh local override is not loaded'
+if grep -Eq '/mnt/c/Users/|clang\+llvm-[0-9]|cuda-[0-9]|cmake-[0-9]|postgresql@[0-9]|127\.0\.0\.1 [0-9]+' \
+    "$REPO_ROOT/packages/fish/.config/fish/config.fish" \
+    "$REPO_ROOT/packages/zsh/.config/zsh/.zshrc"; then
+    fail 'shared shell files still contain host-specific paths'
+fi
+
 printf 'Test: adopt guards, previews, backs up, applies, and shows a diff\n'
 ADOPT_REPO="$TEST_ROOT/adopt-repo"
 ADOPT_TARGET="$TEST_ROOT/adopt-home"

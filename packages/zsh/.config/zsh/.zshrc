@@ -15,21 +15,14 @@ typeset -U path PATH
 path=($HOME/.local/bin $HOME/.cargo/bin $HOME/go/bin $path)
 export GOPROXY=https://goproxy.io,direct
 
-# PATH (platform-specific)
-case "$OSTYPE" in
-  linux*)
-    export PATH=$PATH:"/mnt/c/Users/asus/AppData/Local/Programs/Microsoft VS Code/bin/"
-    export PATH=$HOME/toolchains/clang+llvm-18.1.8-x86_64-linux-gnu-ubuntu-18.04/bin:$PATH
-    export PATH=/usr/local/cuda/bin:$PATH
-    export PATH=$HOME/toolchains/cmake-3.31/bin/:$PATH
-    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-    ;;
-  darwin*)
-    export PATH=$HOME/.composer/vendor/bin:$PATH
-    export PATH=$PNPM_HOME:$PATH
-    export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
-    ;;
-esac
+# PATH (portable platform defaults)
+if [[ "$OSTYPE" == darwin* ]]; then
+    path=($HOME/.composer/vendor/bin ${PNPM_HOME:+$PNPM_HOME} $path)
+fi
+
+# Per-host paths and environment values belong in this untracked file. Start
+# with local.zsh.example, which is installed beside this configuration.
+[[ -r "$ZDOTDIR/local.zsh" ]] && source "$ZDOTDIR/local.zsh"
 
 # Rustup
 export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
@@ -48,8 +41,8 @@ typeset __anthropic_token
 if (( $+commands[security] )); then
     __anthropic_token="$(security find-generic-password -a "$USER" -s codex-deepseek-anthropic-token -w 2>/dev/null)"
 fi
-if [[ -z "$__anthropic_token" && -d "$HOME/config/.git" ]]; then
-    __anthropic_token="$(git -C "$HOME/config" config --local --get codexSecrets.anthropicAuthToken 2>/dev/null)"
+if [[ -z "$__anthropic_token" && -n "$DOTFILES_REPO" && -d "$DOTFILES_REPO/.git" ]] && (( $+commands[git] )); then
+    __anthropic_token="$(git -C "$DOTFILES_REPO" config --local --get codexSecrets.anthropicAuthToken 2>/dev/null)"
 fi
 if [[ -n "$__anthropic_token" ]]; then
     export ANTHROPIC_AUTH_TOKEN="$__anthropic_token"

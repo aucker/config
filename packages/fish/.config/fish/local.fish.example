@@ -1,0 +1,26 @@
+# Copy this file to ~/.config/fish/local.fish and adjust it for one host.
+# local.fish is intentionally untracked and is sourced by config.fish.
+
+set -gx DOTFILES_REPO "$HOME/config"
+
+switch (uname -s)
+    case Darwin
+        fish_add_path --global \
+            /opt/homebrew/opt/postgresql@18/bin \
+            "$HOME/.antigravity/antigravity/bin"
+
+        # Only let Homebrew use ~/.curlrc while its local proxy is available.
+        if command -q nc; and nc -z 127.0.0.1 7897 2>/dev/null
+            set -gx HOMEBREW_CURLRC 1
+        end
+
+    case Linux
+        # Uncomment and customize only the tools installed on this host.
+        # set -l windows_user YOUR_WINDOWS_USER
+        # fish_add_path "/mnt/c/Users/$windows_user/AppData/Local/Programs/Microsoft VS Code/bin"
+        # fish_add_path "$HOME/toolchains/clang+llvm-VERSION/bin"
+        # fish_add_path "$HOME/toolchains/cmake-VERSION/bin"
+        # set -l cuda_root /usr/local/cuda-VERSION
+        # fish_add_path "$cuda_root/bin"
+        # set -gx LD_LIBRARY_PATH "$cuda_root/lib64" $LD_LIBRARY_PATH
+end

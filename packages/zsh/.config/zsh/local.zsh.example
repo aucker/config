@@ -1,0 +1,20 @@
+# Copy this file to ~/.config/zsh/local.zsh and adjust it for one host.
+# local.zsh is intentionally untracked and is sourced by .zshrc.
+
+export DOTFILES_REPO="$HOME/config"
+
+case "$OSTYPE" in
+  darwin*)
+    path=(/opt/homebrew/opt/postgresql@18/bin $path)
+    ;;
+  linux*)
+    # Uncomment and customize only the tools installed on this host.
+    # windows_user=YOUR_WINDOWS_USER
+    # path=("/mnt/c/Users/$windows_user/AppData/Local/Programs/Microsoft VS Code/bin" $path)
+    # path=("$HOME/toolchains/clang+llvm-VERSION/bin" $path)
+    # path=("$HOME/toolchains/cmake-VERSION/bin" $path)
+    # cuda_root=/usr/local/cuda-VERSION
+    # path=("$cuda_root/bin" $path)
+    # export LD_LIBRARY_PATH="$cuda_root/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    ;;
+esac

@@ -99,10 +99,13 @@ by its ID when deciding what to work on next.
   - Added regression coverage proving that the Linux profile excludes macOS
     `~/Library` targets.
 
-- [ ] **PORT-02 — Move host-specific paths out of shared shell files**
+- [x] **PORT-02 — Move host-specific paths out of shared shell files**
   - Remove fixed usernames, WSL paths, CUDA versions, compiler locations, and
     other machine-specific paths from the shared Fish and Zsh configuration.
   - Load an ignored local override file for each machine.
+  - Added untracked `local.fish` and `local.zsh` hooks with safe examples.
+  - Moved pinned toolchain, CUDA, PostgreSQL, proxy, and repository paths out
+    of the shared shell startup files.
 
 - [ ] **PORT-03 — Split shared and local Git configuration**
   - Keep aliases, diff settings, and defaults in the repository.
