@@ -1,0 +1,4 @@
+# Configuration groups installed on native Windows.
+powershell
+starship
+vscode

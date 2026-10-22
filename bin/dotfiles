@@ -120,6 +120,11 @@ load_profile() {
     local profile_file="$PROFILES_DIR/$profile"
     local line
 
+    if [[ "$profile" == 'windows' ]]; then
+        error 'The Windows profile is managed by stow-windows.ps1, not GNU Stow.'
+        return 1
+    fi
+
     if [[ ! -f "$profile_file" ]]; then
         error "Profile not found: $profile"
         return 1

@@ -71,19 +71,21 @@ Windows users should use the dedicated PowerShell script:
 .\stow-windows.ps1
 ```
 
-This script handles Windows-specific configurations from the `windows/` directory and creates symbolic links to the appropriate Windows locations:
+This script reads the explicit `profiles/windows` selection, handles its
+Windows-specific configurations from the `windows/` directory, and creates
+symbolic links to the appropriate Windows locations:
 
 - PowerShell profile → `$env:USERPROFILE\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1`
 - Starship config → `$env:USERPROFILE\.config\starship.toml`
 - VS Code settings → `$env:APPDATA\Code\User\`
 
-**Note:** `bin/dotfiles` manages POSIX packages only. Windows configurations
-continue to use `stow-windows.ps1`.
+**Note:** `bin/dotfiles` manages POSIX packages only and deliberately rejects
+`@windows`. Native Windows configurations use `stow-windows.ps1`.
 
 ## Directory Structure
 
 - `packages/` - Flat GNU Stow packages such as `git`, `zsh`, and `nvim`
-- `profiles/` - Explicit macOS, Linux, and WSL package selections
+- `profiles/` - Explicit macOS, Linux, WSL, and Windows selections
 - `scripts/` - Utilities that are run directly rather than stowed
 - `docs/` - Notes and archived configuration references
 - `windows/` - Windows-only configurations (handled by `stow-windows.ps1`)

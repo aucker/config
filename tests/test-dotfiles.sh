@@ -75,8 +75,21 @@ rm -- "$TARGET/.editorconfig"
 printf 'Test: explicit profiles include packages omitted by old discovery\n'
 output="$("$DOTFILES" list)" || fail 'list failed'
 assert_contains "$output" '@macos'
+assert_contains "$output" '@windows'
 assert_contains "$output" 'vscode-macos'
+assert_contains "$output" 'powershell'
 assert_contains "$output" 'core'
+
+printf 'Test: platform profiles keep platform-only paths isolated\n'
+LINUX_TARGET="$TEST_ROOT/linux-home"
+mkdir -p "$LINUX_TARGET"
+"$DOTFILES" --target "$LINUX_TARGET" install @linux >/dev/null || fail 'Linux profile install failed'
+[[ ! -e "$LINUX_TARGET/Library" ]] || fail 'Linux profile created a macOS Library path'
+"$DOTFILES" --target "$LINUX_TARGET" uninstall @linux >/dev/null || fail 'Linux profile uninstall failed'
+if output="$("$DOTFILES" --target "$TARGET" status @windows 2>&1)"; then
+    fail 'POSIX command unexpectedly accepted the Windows profile'
+fi
+assert_contains "$output" 'managed by stow-windows.ps1'
 
 printf 'Test: adopt guards, previews, backs up, applies, and shows a diff\n'
 ADOPT_REPO="$TEST_ROOT/adopt-repo"

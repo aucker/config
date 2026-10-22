@@ -91,9 +91,13 @@ by its ID when deciding what to work on next.
 
 ## Priority 3: Separate Shared, Platform, Host, and Secret State
 
-- [ ] **PORT-01 — Introduce platform profiles**
+- [x] **PORT-01 — Introduce platform profiles**
   - Define macOS, Linux, WSL, and Windows package selections explicitly.
   - Prevent a Linux installation from creating macOS `~/Library` paths.
+  - Added a native Windows selection consumed by `stow-windows.ps1`; the POSIX
+    command rejects it with an explicit handoff.
+  - Added regression coverage proving that the Linux profile excludes macOS
+    `~/Library` targets.
 
 - [ ] **PORT-02 — Move host-specific paths out of shared shell files**
   - Remove fixed usernames, WSL paths, CUDA versions, compiler locations, and
