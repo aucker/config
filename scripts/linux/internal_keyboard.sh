@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script is used to disable/enable the internal keyboard
-# Usage: ./internal_keyboard.sh [enable|disable]
+# Usage: ./scripts/linux/internal_keyboard.sh [enable|disable]
 
 if [[ $# -ne 1 ]]; then
     echo "Usage: ./internal_keyboard.sh [enable|disable]"

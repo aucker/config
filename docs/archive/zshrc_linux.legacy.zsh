@@ -1,3 +1,6 @@
+# Archived legacy configuration. The active cross-platform Zsh package is
+# packages/zsh; this file is kept only as a historical reference.
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 

@@ -1,1 +1,6 @@
 .vscode/
+
+# Machine-generated state
+.DS_Store
+**/.DS_Store
+packages/fish/.config/fish/fish_variables

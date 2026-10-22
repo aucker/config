@@ -1,9 +1,10 @@
 # Packages installed on macOS.
-core/core-config
-shell/shell-git
-shell/shell-zsh
-shell/shell-fish
-editor/editor-vim
-editor/editor-nvim
-editor/editor-vscode
-terminal/terminal-alacritty
+core
+git
+zsh
+fish
+tmux
+vim
+nvim
+vscode-macos
+alacritty

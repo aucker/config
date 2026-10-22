@@ -15,6 +15,7 @@
 	autocrlf = input
 	safecrlf = true
 	excludesFile = ~/.config/git/ignore
+	hooksPath = ~/.config/git/hooks
 [merge]
 	tool = nvim -d
 [alias]

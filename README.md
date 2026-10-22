@@ -21,32 +21,24 @@ This will set up the most commonly used configurations in your environment.
 
 ## How to Add a New Package
 
-To add a new package, create a directory for it in the appropriate category,
-add it to the relevant file under `profiles/`, and install it with the unified
-dotfiles command:
+To add a new package, create it under `packages/`, add its name to the relevant
+file under `profiles/`, and install it with the unified dotfiles command:
 
 ```bash
-mkdir -p shell/mypkg
-./bin/dotfiles install shell/mypkg
+mkdir -p packages/mypkg
+./bin/dotfiles install mypkg
 ```
 
 ## Example Screenshots
 
 Here's a status output example showing installed packages:
 
-```
-Category             Package                        Status         
-========             =======                        ======         
-./editor             editor-nvim                    installed
-./core               core-config                    installed
-./shell              shell-fish                     installed
-./shell              shell-git                      installed
-./terminal           terminal-alacritty             installed
-
-Legend:
-  installed   - All package files are symlinked
-  partially  - Some package files are symlinked
-  not installed - No package files are symlinked
+```text
+PACKAGE                            STATUS          DETAILS
+-------                            ------          -------
+git                                installed       4/4 linked, 0 missing, 0 conflicts
+zsh                                installed       6/6 linked, 0 missing, 0 conflicts
+nvim                               installed       2/2 linked, 0 missing, 0 conflicts
 ```
 
 ## CI Badges
@@ -90,8 +82,8 @@ continue to use `stow-windows.ps1`.
 
 ## Directory Structure
 
-- `shell/` - Shell configurations (fish, git, etc.)
-- `editor/` - Editor configurations (nvim, vscode, etc.)
-- `terminal/` - Terminal configurations (alacritty, etc.)
+- `packages/` - Flat GNU Stow packages such as `git`, `zsh`, and `nvim`
 - `profiles/` - Explicit macOS, Linux, and WSL package selections
+- `scripts/` - Utilities that are run directly rather than stowed
+- `docs/` - Notes and archived configuration references
 - `windows/` - Windows-only configurations (handled by `stow-windows.ps1`)
