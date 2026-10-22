@@ -100,6 +100,26 @@ if grep -Eq '/mnt/c/Users/|clang\+llvm-[0-9]|cuda-[0-9]|cmake-[0-9]|postgresql@[
     fail 'shared shell files still contain host-specific paths'
 fi
 
+printf 'Test: Git local overrides resolve beside the installed config symlink\n'
+GIT_TARGET="$TEST_ROOT/git-home"
+mkdir -p "$GIT_TARGET"
+"$DOTFILES" --target "$GIT_TARGET" install git >/dev/null || fail 'Git package install failed'
+assert_link "$GIT_TARGET/.config/git/config"
+assert_link "$GIT_TARGET/.config/git/config.local.example"
+output="$(git config --file "$GIT_TARGET/.config/git/config" --includes --get alias.st)" || fail 'Git config failed without local overrides'
+[[ "$output" == status ]] || fail 'shared Git alias was lost'
+if git config --file "$GIT_TARGET/.config/git/config" --includes --get user.email >/dev/null 2>&1; then
+    fail 'Git package supplies a host identity without local configuration'
+fi
+git config --file "$GIT_TARGET/.config/git/config.local" user.email 'host@example.invalid' || fail 'could not create local Git override'
+git config --file "$GIT_TARGET/.config/git/config.local" pull.ff false || fail 'could not create shared-setting override'
+output="$(git config --file "$GIT_TARGET/.config/git/config" --includes --get user.email)" || fail 'local Git identity was not loaded'
+[[ "$output" == host@example.invalid ]] || fail 'local Git identity was not preserved'
+output="$(git config --file "$GIT_TARGET/.config/git/config" --includes --get pull.ff)" || fail 'local Git preference was not loaded'
+[[ "$output" == false ]] || fail 'local Git setting did not override the shared default'
+"$DOTFILES" --target "$GIT_TARGET" uninstall git >/dev/null || fail 'Git package uninstall failed'
+[[ -f "$GIT_TARGET/.config/git/config.local" && ! -L "$GIT_TARGET/.config/git/config.local" ]] || fail 'uninstall removed the host Git configuration'
+
 printf 'Test: adopt guards, previews, backs up, applies, and shows a diff\n'
 ADOPT_REPO="$TEST_ROOT/adopt-repo"
 ADOPT_TARGET="$TEST_ROOT/adopt-home"

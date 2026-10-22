@@ -8,3 +8,6 @@ packages/fish/.config/fish/fish_variables
 # Per-host shell overrides
 packages/fish/.config/fish/local.fish
 packages/zsh/.config/zsh/local.zsh
+
+# Per-host Git override
+packages/git/.config/git/config.local

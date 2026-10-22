@@ -36,7 +36,7 @@ Here's a status output example showing installed packages:
 ```text
 PACKAGE                            STATUS          DETAILS
 -------                            ------          -------
-git                                installed       4/4 linked, 0 missing, 0 conflicts
+git                                installed       5/5 linked, 0 missing, 0 conflicts
 zsh                                installed       6/6 linked, 0 missing, 0 conflicts
 nvim                               installed       2/2 linked, 0 missing, 0 conflicts
 ```
@@ -72,6 +72,22 @@ cp ~/.config/zsh/local.zsh.example ~/.config/zsh/local.zsh
 ```
 
 The shared Fish and Zsh configurations load these files when present.
+
+Git keeps aliases and general defaults in the shared configuration, and reads
+`~/.config/git/config.local` last for host-specific overrides. On a new machine:
+
+```bash
+cp ~/.config/git/config.local.example ~/.config/git/config.local
+chmod 600 ~/.config/git/config.local
+```
+
+Edit that local file to set your identity, signing key, signing preference,
+proxy, and account settings. The commented example enables none of these by
+default. Enable signing after making the key available on that machine, and
+configure a proxy only where one is running. Git also works when the local
+file is absent. Keep authentication secrets in a credential helper or password
+manager. Keep the local file in your home configuration directory, outside the
+Stow package, so it is not installed on other hosts.
 
 ### Windows
 

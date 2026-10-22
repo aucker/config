@@ -107,10 +107,12 @@ by its ID when deciding what to work on next.
   - Moved pinned toolchain, CUDA, PostgreSQL, proxy, and repository paths out
     of the shared shell startup files.
 
-- [ ] **PORT-03 — Split shared and local Git configuration**
+- [x] **PORT-03 — Split shared and local Git configuration**
   - Keep aliases, diff settings, and defaults in the repository.
   - Move identity, signing key, proxy, and machine-dependent settings to an
     included local configuration.
+  - Added an optional, final `config.local` include and a commented setup
+    example; migrated this Mac's settings while preserving their values.
 
 - [ ] **SEC-03 — Standardize secret loading**
   - Use macOS Keychain, `pass`, or 1Password rather than tracked shell files.

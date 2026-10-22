@@ -1,12 +1,3 @@
-[http]
-	proxy = http://127.0.0.1:7897
-[https]
-	proxy = http://127.0.0.1:7897
-
-[user]
-	name = Aucker
-	email = aucker2020@gmail.com
-	signingkey = E5F21A529583690F
 [ui "color"]
 	ui = always
 [color]
@@ -40,8 +31,6 @@
 
 [url "git@github.com:"]
 	insteadOf = gh:
-[github]
-	use = aucker
 [diff]
 	algorithm = histogram
 	indentHeuristic = true
@@ -57,7 +46,7 @@
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
-[commit]
-	gpgsign = true
-
-# Test comment added via stow
+# Host-specific settings are read last so they can override shared defaults.
+# Copy config.local.example to config.local beside this file and customize it.
+[include]
+	path = config.local

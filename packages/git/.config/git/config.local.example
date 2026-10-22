@@ -1,0 +1,16 @@
+# Copy to ~/.config/git/config.local and fill in the settings for this host.
+# Missing config.local files are allowed. Never store passwords or API keys here;
+# use a credential helper or your password manager for authentication secrets.
+[user]
+	# name = Your Name
+	# email = you@example.com
+	# signingkey = YOUR_SIGNING_KEY_ID
+[commit]
+	# Enable once the corresponding signing key is available on this machine.
+	# gpgsign = true
+[http]
+	# proxy = http://127.0.0.1:7897
+[https]
+	# proxy = http://127.0.0.1:7897
+[github]
+	# use = YOUR_GITHUB_USERNAME
