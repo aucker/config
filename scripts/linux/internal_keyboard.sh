@@ -23,10 +23,10 @@ if [[ -z $number ]]; then
 # if the number is not empty, disable/enable the internal keyboard
 else
     if [[ $1 == "disable" ]]; then
-        xinput float $number
+        xinput float "$number"
         echo "Internal keyboard disabled"
     elif [[ $1 == "enable" ]]; then
-        xinput reattach $number 3
+        xinput reattach "$number" 3
         echo "Internal keyboard enabled"
     fi
 fi

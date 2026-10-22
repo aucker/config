@@ -35,6 +35,21 @@ with `./tests/test-dotfiles.sh` (Bash, Git, and GNU Stow required). The suite us
 temporary target directories. Run `bash tests/test-secret-loading.sh` as well
 for shell credential changes; it requires Fish and Zsh and uses offline stores.
 
+For format validation, install Python 3.11+, Fish, Zsh, and Neovim alongside
+Bash and Git, then create an isolated parser environment:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r tests/requirements.txt
+.venv/bin/python -B tests/test_config_validation.py
+.venv/bin/python -B tests/validate_configs.py
+```
+
+Validation parses each shell file separately, compiles Neovim Lua without
+executing it, and checks TOML, YAML, strict JSON, VS Code JSONC, and Git config.
+It does not source your shell config or retrieve secrets. Native Windows and
+archived files remain outside this validation scope.
+
 ## Example Screenshots
 
 Here's a status output example showing installed packages:

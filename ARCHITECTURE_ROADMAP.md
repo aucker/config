@@ -140,10 +140,14 @@ by its ID when deciding what to work on next.
     including paths with spaces and preservation of local files on uninstall.
   - Run integration tests on both Linux and macOS CI runners.
 
-- [ ] **TEST-02 — Validate each configuration format**
-  - Check Bash, Zsh, Fish, PowerShell, Lua, TOML, YAML, and VS Code JSONC where
-    applicable.
-  - Avoid excluding the entire Zsh package from shell analysis.
+- [x] **TEST-02 — Validate configuration formats (POSIX scope)**
+  - Check Bash, POSIX sh, Zsh, Fish, Lua, TOML, YAML, strict JSON, VS Code
+    JSONC, Git configuration, and the Python validation tools.
+  - Parse every shell file individually, including local-file examples; use
+    Zsh's native parser rather than passing Zsh files to ShellCheck.
+  - Compile Lua in Neovim without executing the configuration or plugins.
+  - Add parser regression tests and run validation in macOS/Linux CI.
+  - PowerShell validation remains deferred alongside WIN-01.
 
 - [ ] **TEST-03 — Add secret scanning**
   - Reject newly committed API keys, private keys, passwords, and common cloud

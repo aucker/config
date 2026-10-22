@@ -1,0 +1,2 @@
+# YAML parsing; JSON and TOML use the Python 3.11+ standard library.
+PyYAML==6.0.3

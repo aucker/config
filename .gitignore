@@ -15,3 +15,7 @@ packages/git/.config/git/config.local
 # Per-host secret-store mappings
 packages/fish/.config/fish/secrets.local.fish
 packages/zsh/.config/zsh/secrets.local.zsh
+
+# Local validation environment and Python bytecode
+.venv/
+__pycache__/
