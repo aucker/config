@@ -100,7 +100,8 @@ has been found.
 
 The initial full-history audit found a WakaTime API-key setting in old
 `Code/settings.json` and `vscode/settings.json` commits (`326cca0` and
-`38f7075`). Its value is absent from current files. Verify that the credential
-has been revoked/rotated before treating this exposure as resolved. Full-history
-audits deliberately continue reporting it; no allowlist or baseline suppresses
-it. The normal CI gate checks current files and newly introduced commits.
+`38f7075`). Its value is absent from current files. WakaTime work was stopped
+at the user's request; no rotation or WakaTime history rewrite was performed,
+and revocation remains unverified. Full-history audits continue reporting it
+without an exemption or baseline. The normal CI gate checks current files and
+newly introduced commits; this deferred item does not block unrelated work.

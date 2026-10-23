@@ -2,11 +2,11 @@
 
 ### Directory Layout
 ```
-.editor-nvim/
+packages/nvim/
 ├── .config/
 │   └── nvim/
 │       ├── init.lua          # Main configuration file
-│       └── lua/             # Custom Lua scripts can be placed here
+│       └── lazy-lock.json    # Plugin lockfile
 ```
 
 ### Plugin Installation
@@ -20,7 +20,7 @@
 - `Ctrl + p`: Open files using FZF.
 - `Leader + ;`: Search buffers.
 - `Leader + w`: Quick save.
-- `Esc`: Remapped to `Ctrl + j` and `Ctrl + k` in all modes.
+- `Ctrl + j` / `Ctrl + k`: Act as Escape; an attached LSP can override normal-mode `Ctrl + k` for signature help.
 - `Ctrl + h`: Stops searching (highlights).
 - `Leader + o`: Open new file adjacent to current.
 - `Leader + ,`: Toggle hidden characters.
@@ -30,11 +30,15 @@
 - **Diagnostics**: Integrated diagnostics with virtual text.
 - **Miscellaneous**: Clipboards integration and enhanced navigation.
 
-### Recent Optimizations (2025-07-13)
-- **Fixed Rust clipboard command**: Changed from `wl-copy` to `pbcopy` for macOS compatibility
-- **Fixed LSP inlay hints bug**: Corrected undefined `bufnr` variable to `ev.buf`
-- **Simplified LSP keymaps**: Removed unnecessary helper function for cleaner, more standard code
-- **Updated deprecated vim.loop**: Changed to `vim.uv or vim.loop` for newer Neovim compatibility
-- **Improved plugin lazy loading**: Added `event = "VeryLazy"` to leap.nvim, vim-matchup, and nvim-rooter for faster startup
-- **Performance impact**: Plugins now load "just in time" rather than all at startup, improving initial responsiveness
+### Setup and validation
+
+Install using `./bin/dotfiles install nvim` from the repository root. First
+launch can download lazy.nvim and plugins; installing links does not install
+language servers, external tools, or clipboard utilities.
+
+The clipboard mappings currently use macOS `pbcopy`/`pbpaste`; review them on
+other platforms. See [bootstrap dependencies](../../docs/bootstrap.md#application-dependencies-and-limitations).
+The [format validator](../../docs/validation.md#configuration-formats) compiles
+`init.lua` without executing its plugin bootstrap. Passing that check does not
+verify plugin or language-server runtime behavior.
 

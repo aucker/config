@@ -1,5 +1,7 @@
 # GNU Stow Install/Uninstall Implementation - Step 4 Complete
 
+> Historical report for the removed `stow-posix.sh`. Use [current commands](../../README.md).
+
 ## Overview
 Successfully implemented install/uninstall actions with conflict detection using GNU Stow in the `stow-posix.sh` script.
 

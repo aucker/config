@@ -158,30 +158,32 @@ by its ID when deciding what to work on next.
   - Integrated staged checks into the managed Git hook; CI scans current files
     and newly pushed/PR commits using a checksum-verified pinned scanner.
 
-- [ ] **SEC-04 — Rotate the historically exposed WakaTime API key**
+- [ ] **SEC-04 — Rotate the historically exposed WakaTime API key (deferred)**
   - Full-history scanning found the same key in VS Code settings in commits
     `326cca0` and `38f7075`; it is absent from current files.
-  - Revocation/rotation has not been verified. Decide on history cleanup after
-    the credential is disabled; no history baseline hides these findings.
+  - Stopped at the user's request because WakaTime is no longer used. No key
+    rotation or WakaTime history rewrite was performed; revocation is unverified.
+  - Full-history scans retain the finding without an exemption or baseline.
 
-- [ ] **DOC-01 — Replace stale documentation**
+- [x] **DOC-01 — Replace stale documentation**
   - Rewrite `README.md` around the actual bootstrap and profile workflow.
   - Update or replace `STRUCTURE.md`.
   - Archive or delete obsolete implementation notes after useful decisions are
     incorporated.
+  - Replaced README/structure guidance and archived the old plan, removed
+    installer's implementation report, and earlier shell sanitization report.
 
-- [ ] **DOC-02 — Document bootstrap dependencies**
+- [x] **DOC-02 — Document bootstrap dependencies**
   - List required and optional tools for each operating system.
   - Document fresh-machine installation, rollback, local overrides, and secret
     provisioning.
+  - Added focused bootstrap and validation guides with actual command behavior,
+    dependency groups, backup recovery, and remaining runtime portability limits.
 
-## Suggested Execution Order
+## Remaining scope
 
-1. `SEC-02` if removing the leaked value from public history is desired.
-2. `INST-01` through `INST-05` to establish one reliable management command.
-3. `PKG-01` through `PKG-04` to normalize package ownership.
-4. `PORT-01` through `WIN-01` to formalize cross-platform behavior.
-5. `TEST-01` through `DOC-02` to make the result reproducible and maintainable.
-
-`SEC-02` can be postponed because the exposed key is disabled, but no new
-secrets should be committed while the remaining work proceeds.
+The POSIX installation, package normalization, local-state separation, verification,
+and documentation work above is complete. `WIN-01` (including PowerShell validation)
+and `SEC-04` are deferred at the user's request. Reopen them only when requested.
+Application-specific runtime portability assumptions remain documented in
+[the bootstrap guide](docs/bootstrap.md#application-dependencies-and-limitations).

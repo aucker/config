@@ -1,5 +1,9 @@
 # Debugging Notes: Fish Shell Network Hang & SSID Redaction
 
+This is a historical incident report. Reproduced paths and diffs use the old
+layout; the active implementation is now
+[`packages/fish/.config/fish/functions/fish_greeting.fish`](../packages/fish/.config/fish/functions/fish_greeting.fish).
+
 ## 1. Problem Statement
 When opening a new `tmux` window on **macOS 27.0 ("Golden Gate", Darwin 27.0.0, Build 26A428)**, the shell startup sequence was freezing for over 30 seconds on the **Network** row of the system overview greeting (`fish_greeting`).
 

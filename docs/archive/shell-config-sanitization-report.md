@@ -1,5 +1,8 @@
 # Shell Configuration Sanitization Report
 
+> Historical report for a different machine/layout. Host paths now belong in
+> [local overrides](../bootstrap.md#local-settings), not shared shell files.
+
 **Date:** 2026-06-26  
 **Scope:** fish, zsh, profile
 

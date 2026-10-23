@@ -1,5 +1,7 @@
 # Dotfiles Refactoring Plan
 
+> Historical plan for a superseded layout. Use [the current bootstrap guide](../bootstrap.md).
+
 Based on our discussion, here is the plan to clean up and refactor the dotfiles repository:
 
 ## 1. Consolidate and Clean Up Fish Configurations
