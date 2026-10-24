@@ -123,13 +123,13 @@ vim.keymap.set('n', '<C-h>', '<cmd>nohlsearch<cr>')
 -- Jump to start and end of line using the home row keys
 vim.keymap.set('', 'H', '^')
 vim.keymap.set('', 'L', '$')
--- Neat X clipboard integration
--- <leader>p will paste clipboard into buffer
--- <leader>c will copy entire buffer into clipboard
--- vim.keymap.set('n', '<leader>p', '<cmd>read !wl-paste<cr>', { desc = 'Paste from clipboard' })
--- vim.keymap.set('n', '<leader>c', '<cmd>w !wl-copy<cr><cr>', { desc = 'Copy buffer to clipboard' })
-vim.keymap.set('n', '<leader>p', '<cmd>read !pbpaste<cr>', { desc = 'Paste from clipboard' })
-vim.keymap.set('n', '<leader>c', '<cmd>w !pbcopy<cr><cr>', { desc = 'Copy buffer to clipboard' })
+-- Use Neovim's clipboard provider (macOS, Wayland, X11, or a user override).
+vim.keymap.set('n', '<leader>p', function()
+	require('dotfiles.clipboard').paste_after_line()
+end, { desc = 'Paste from clipboard' })
+vim.keymap.set('n', '<leader>c', function()
+	require('dotfiles.clipboard').copy_buffer()
+end, { desc = 'Copy buffer to clipboard' })
 -- <leader><leader> toggles between buffers
 vim.keymap.set('n', '<leader><leader>', '<c-^>', { desc = 'Toggle between buffers' })
 -- <leader>, shows/hides hidden characters, this works with list chars

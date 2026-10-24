@@ -27,6 +27,20 @@ bash tests/test-secret-loading.sh
 Mock Keychain/`pass` backends check exports, inherited values, empty/failed
 lookups, and that values are not printed.
 
+With Python 3, Fish, Neovim, Vim, and tmux installed:
+
+```bash
+python3 -B tests/test_runtime_portability.py
+```
+
+This tests platform dispatch and Linux metric parsing with fixtures, private
+greeting-cache behavior, macOS/Wayland/X11 clipboard selection, and headless
+fallbacks. Neovim uses an offline clipboard provider, and Vim uses a mock
+formatter against all three save-hook variants without starting editor plugins.
+The tmux configuration is loaded on a private socket/server that the test removes;
+existing sessions and real desktop clipboards are not used. A sandbox may need
+permission to create that temporary Unix socket.
+
 ## Configuration formats
 
 Use Python 3.11+, Bash, Git, Fish, Zsh, and Neovim. The Python requirement comes
@@ -52,8 +66,8 @@ Regression tests check malformed input and ensure configs are not executed.
 Git includes are disabled during syntax checks, so local settings are not loaded.
 
 These are syntax checks, not application-schema or plugin compatibility checks.
-Vimscript/tmux runtime behavior, native Windows, and archived files are outside
-the validator's scope.
+Vimscript/tmux syntax is exercised by the focused runtime suite above, not this
+parser. Native Windows and archived files remain outside validation scope.
 
 ## Secret scanning
 
@@ -90,7 +104,8 @@ complete. Reports show location/rule metadata and hide credential values.
 
 The [workflow](../.github/workflows/ci.yml) configures:
 
-- macOS/Linux profile integration, native syntax checks, and offline loader tests.
+- macOS/Linux profile integration, native syntax checks, offline loader tests,
+  and the focused greeting/clipboard/formatter runtime suite.
 - ShellCheck for Bash/POSIX sh; Zsh uses its native parser.
 - shfmt for the POSIX command and `.sh` files.
 - Checksum-verified Gitleaks 8.30.1, scanner tests, worktree scanning, and scans

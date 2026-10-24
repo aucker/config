@@ -82,6 +82,7 @@ Reports hide credential values.
 ```bash
 ./tests/test-dotfiles.sh
 bash tests/test-secret-loading.sh
+python3 -B tests/test_runtime_portability.py
 python3 scripts/check_secrets.py worktree
 python3 -B tests/test_secret_scanning.py
 ```

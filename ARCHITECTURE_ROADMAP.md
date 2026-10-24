@@ -180,6 +180,22 @@ by its ID when deciding what to work on next.
   - Added focused bootstrap and validation guides with actual command behavior,
     dependency groups, backup recovery, and remaining runtime portability limits.
 
+## Runtime portability follow-up
+
+- [x] **RUN-01 — Make the Fish greeting platform-aware**
+  - Preserve macOS metrics; add Linux memory/disk/network/battery fallbacks and
+    graceful placeholders when tools or platform data are unavailable.
+  - Use a private per-user cache and the platform's native `stat` syntax.
+- [x] **RUN-02 — Select clipboard backends at runtime**
+  - Use native Neovim clipboard providers, and a tmux helper for macOS,
+    Wayland, or X11; preserve text when a clipboard backend is unavailable.
+- [x] **RUN-03 — Remove Vim's version-pinned formatter path**
+  - Resolve `clang-format` from PATH, format unsaved content through stdin,
+    and preserve the buffer on missing tools or failed formatting.
+- [x] **RUN-04 — Exercise runtime branches without a second machine**
+  - Add offline fixtures plus native Neovim/Vim and private-server tmux tests
+    to the macOS/Linux CI matrix.
+
 ## Remaining scope
 
 The POSIX installation, package normalization, local-state separation, verification,

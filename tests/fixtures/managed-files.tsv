@@ -24,11 +24,14 @@ fish	.config/fish/functions/fish_prompt.fish
 fish	.config/fish/functions/fish_user_key_bindings.fish
 fish	.config/fish/functions/fisher.fish
 tmux	.tmux.conf
+tmux	.local/bin/dotfiles-clipboard
 vim	.vimrc
 vim	.vimrc_linux
 vim	.vimrc_mac
+vim	.vim/autoload/dotfiles.vim
 nvim	.config/nvim/init.lua
 nvim	.config/nvim/lazy-lock.json
+nvim	.config/nvim/lua/dotfiles/clipboard.lua
 vscode-macos	Library/Application Support/Code/User/keybindings.json
 vscode-macos	Library/Application Support/Code/User/settings.json
 vscode-macos	Library/Application Support/Code/User/snippets/c.json

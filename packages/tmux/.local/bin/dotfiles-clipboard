@@ -1,0 +1,18 @@
+#!/bin/sh
+# Copy stdin using an available graphical-session clipboard backend.
+
+if [ "$(uname -s)" = Darwin ] && command -v pbcopy >/dev/null 2>&1; then
+    exec pbcopy
+fi
+if [ -n "${WAYLAND_DISPLAY:-}" ] && command -v wl-copy >/dev/null 2>&1; then
+    exec wl-copy
+fi
+if [ -n "${DISPLAY:-}" ] && command -v xclip >/dev/null 2>&1; then
+    exec xclip -in -selection clipboard
+fi
+if [ -n "${DISPLAY:-}" ] && command -v xsel >/dev/null 2>&1; then
+    exec xsel --clipboard --input
+fi
+
+printf '%s\n' 'Clipboard unavailable: use pbcopy on macOS, wl-copy on Wayland, or xclip/xsel on X11. Text remains in the tmux buffer.' >&2
+exit 1

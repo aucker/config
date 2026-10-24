@@ -11,7 +11,7 @@ fonts, language servers, or credentials.
 | Use shell/editor configs | Corresponding applications and invoked integrations; see below |
 | Commit here with the managed hook | Python 3 and Gitleaks; `clang-format` for staged `.c`/`.h` files |
 | Profile integration tests | Git, Bash, GNU Stow |
-| All local validation | Python 3.11+, pinned Python requirements, Fish, Zsh, Neovim, Git, Bash, GNU Stow, Gitleaks |
+| All local validation | Python 3.11+, pinned Python requirements, Fish, Zsh, Neovim, Vim, tmux, Git, Bash, GNU Stow, Gitleaks |
 | CI shell lint/format checks locally | ShellCheck and shfmt in addition to the above |
 | Native Windows install | PowerShell and permission to create symlinks; parity/testing deferred |
 
@@ -20,7 +20,7 @@ On macOS, use an existing [Homebrew installation](https://brew.sh/):
 ```bash
 brew install git stow
 # Add runtimes for the packages and checks you intend to use:
-brew install fish zsh tmux neovim python gitleaks
+brew install fish zsh tmux neovim vim python gitleaks
 ```
 
 Homebrew documents the install commands for [Stow](https://formulae.brew.sh/formula/stow)
@@ -33,7 +33,7 @@ On Debian/Ubuntu, including WSL distributions using apt:
 sudo apt-get update
 sudo apt-get install -y git stow bash
 # Optional runtimes and validation tools:
-sudo apt-get install -y fish zsh tmux neovim python3 python3-venv
+sudo apt-get install -y fish zsh tmux neovim vim python3 python3-venv
 ```
 
 Check `python3 --version` before format validation: it requires 3.11+ for the
@@ -177,12 +177,35 @@ sourced only when present. Install Alacritty's selected font separately.
 Neovim fetches lazy.nvim on first launch, and Vim may fetch vim-plug; starting
 editors can therefore access the network.
 
-Profiles separate target paths, not every application behavior. The Fish greeting
-uses macOS utilities, tmux clipboard bindings use `xclip`, Neovim clipboard
-mappings use `pbcopy`/`pbpaste`, and Vim has a pinned Homebrew clang-format
-Python-script path. Review/adapt these on other hosts; link and syntax checks
-do not establish full runtime portability. A non-macOS Fish user can define an
-empty `fish_greeting` function in their local override to suppress that greeting.
+The Fish greeting selects macOS or Linux metrics. Linux memory comes from
+`/proc/meminfo`; network details use `ip` from iproute2 when available. Missing
+metrics and unsupported platforms use placeholders. Its ten-second cache lives
+in `${XDG_CACHE_HOME:-$HOME/.cache}/fish/`, separately for each platform, with
+private files and no shared `/tmp` cache. A read-only cache location still allows
+the greeting to render.
+
+Tmux's clipboard helper selects `pbcopy` on macOS, `wl-copy` on Wayland, or
+`xclip`/`xsel` on X11. Linux tools require the corresponding graphical-session
+environment (`WAYLAND_DISPLAY` or `DISPLAY`). Install `wl-clipboard`, `xclip`, or
+`xsel` as appropriate. On a headless host it reports that no backend is available;
+the copy-mode selection remains in tmux's paste buffer. Neovim uses its native
+clipboard provider rather than pinned shell commands; see
+[Neovim's provider documentation](https://neovim.io/doc/user/provider/#clipboard-integration).
+Its mappings leave the buffer unchanged if no provider is available.
+
+Vim's `.h`, `.cc`, and `.cpp` save hooks call `clang-format` resolved from `PATH`.
+The filename is passed with `--assume-filename` to discover the project style,
+and formatting reads the current unsaved buffer through stdin. Python support
+and a versioned Homebrew script path are no longer required. A missing, failed,
+or empty-output formatter leaves the buffer intact. The manual `Autoformat`
+shortcut continues to use its existing plugin.
+
+Open new editor/shell sessions after updating. Reload tmux bindings in the
+intended server with `tmux source-file ~/.tmux.conf`. The helper files are part
+of their packages, so re-run `./bin/dotfiles install tmux vim nvim` after pulling
+these additions. Review other host choices, such as Neovim's Python-provider
+virtualenv and optional Vim plugin paths, when changing machines. Syntax and
+focused runtime checks do not verify every external plugin/tool combination.
 
 ## Native Windows
 

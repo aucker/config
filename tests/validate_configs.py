@@ -96,7 +96,8 @@ def file_format(relative):
         return None
     if path == "bin/dotfiles" or relative.suffix == ".sh":
         return "bash"
-    if path in ("packages/git/.config/git/hooks/pre-commit", "tests/fixtures/secret-backend"):
+    if path in ("packages/git/.config/git/hooks/pre-commit", "tests/fixtures/secret-backend",
+                "packages/tmux/.local/bin/dotfiles-clipboard"):
         return "sh"
     if relative.name in (".zshrc", ".zshenv") or path.endswith((".zsh", ".zsh.example")):
         return "zsh"

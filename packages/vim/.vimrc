@@ -166,24 +166,13 @@ map <LEADER>sc :set spell!<CR>
 " Press ` to change case (instead of ~)
 map ` ~
 
-" Clang format Vim Integration
-" if has('python')
-"   map <C-K> :pyf /usr/share/clang/clang-format-14/clang-format.py<cr>
-"   imap <C-K> <c-o>:pyf /usr/share/clang/clang-format-14/clang-format.py<cr>
-" elseif has('python3')
-"   map <C-K> :py3f /usr/share/clang/clang-format-14/clang-format.py<cr>
-"   imap <C-K> <c-o>:py3f /usr/share/clang/clang-format-14/clang-format.py<cr>
-" endif
-
-let g:python3_host_prog="/usr/bin/"
+" C/C++ save formatting uses clang-format found on PATH.
+" Keep the existing plugin-driven manual formatting shortcut.
 noremap <C-K> :Autoformat<CR>
-
-" Format when save a file
-function! Formatonsave()
-  let l:formatdiff = 1
-  py3f /opt/homebrew/Cellar/clang-format/18.1.8/share/clang/clang-format.py
-endfunction
-autocmd BufWritePre *.h,*.cc,*.cpp call Formatonsave()
+augroup dotfiles_clang_format
+  autocmd!
+  autocmd BufWritePre *.h,*.cc,*.cpp call dotfiles#format()
+augroup END
 
 
 " Auto change directory to current dir

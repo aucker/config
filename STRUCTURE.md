@@ -35,9 +35,9 @@ For example, `packages/zsh/.config/zsh/.zshrc` becomes `~/.config/zsh/.zshrc`.
 | `git` | Selected `~/.config/git/` config, ignores, attributes, hook, and local example |
 | `zsh` | `~/.zshenv`, selected `~/.config/zsh/` files and examples |
 | `fish` | Selected `~/.config/fish/` files, functions, and examples |
-| `tmux` | `~/.tmux.conf` |
-| `vim` | `~/.vimrc`, `~/.vimrc_mac`, `~/.vimrc_linux` |
-| `nvim` | `~/.config/nvim/init.lua`, `lazy-lock.json` |
+| `tmux` | `~/.tmux.conf`, `~/.local/bin/dotfiles-clipboard` |
+| `vim` | `~/.vimrc`, `~/.vimrc_mac`, `~/.vimrc_linux`, shared `.vim/autoload/dotfiles.vim` |
+| `nvim` | `~/.config/nvim/init.lua`, `lazy-lock.json`, `lua/dotfiles/clipboard.lua` |
 | `vscode-macos` | `~/Library/Application Support/Code/User/` settings, keybindings, snippets |
 | `alacritty` | `~/.config/alacritty/alacritty.toml` and its selected vendored theme |
 
