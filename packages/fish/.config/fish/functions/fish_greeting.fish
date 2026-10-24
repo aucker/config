@@ -31,7 +31,7 @@ function __dotfiles_greeting_macos_memory
     set -l total_gb (math -s2 "$total_bytes / 1024 / 1024 / 1024")
     set -l pct (math -s0 "100 * $used_bytes / $total_bytes")
 
-    printf "%6.2f / %-5.2f GB (%s%%)" $used_gb $total_gb $pct
+    printf "%.2f / %-.2f GB (%s%%)" $used_gb $total_gb $pct
 end
 
 # --- Helper: disk info (accurate APFS container) ---
@@ -55,7 +55,7 @@ function __dotfiles_greeting_macos_disk
     set -l total_gb (math -s1 "$total_bytes / 1024 / 1024 / 1024")
     set -l used_pct (math -s0 "100 * $used_bytes / $total_bytes")
 
-    printf "%6.1f / %-5.1f GB (%s%%)" $used_gb $total_gb $used_pct
+    printf "%.1f / %-.1f GB (%s%%)" $used_gb $total_gb $used_pct
 end
 
 # --- Helper: battery percentage (portable Macs only) ---
@@ -181,7 +181,7 @@ function __dotfiles_greeting_uptime
 end
 
 function __dotfiles_greeting_row
-    printf ' %-*s: \e[0;32m%s\e[0m\n' "$argv[1]" "$argv[2]" (string join ' ' -- $argv[3..-1])
+    printf ' %-*s | \e[0;32m%s\e[0m\n' "$argv[1]" "$argv[2]" (string join ' ' -- $argv[3..-1])
 end
 
 function __dotfiles_greeting_render
