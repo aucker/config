@@ -45,13 +45,13 @@ assert_profile_links() {
         [[ "$package_id" == \#* || -z "$package_id" ]] && continue
         [[ "$selection" == *" $package_id "* ]] || continue
         assert_link "$target/$relative_path"
-        [[ "$target/$relative_path" -ef "$REPO_ROOT/packages/$package_id/$relative_path" ]] || \
+        [[ "$target/$relative_path" -ef "$REPO_ROOT/packages/$package_id/$relative_path" ]] ||
             fail "link does not resolve to its package source: $relative_path"
         expected_count=$((expected_count + 1))
     done <"$TEST_DIR/fixtures/managed-files.tsv"
 
     actual_count="$(find "$target" -type l | wc -l | tr -d '[:space:]')"
-    [[ "$actual_count" -eq "$expected_count" ]] || \
+    [[ "$actual_count" -eq "$expected_count" ]] ||
         fail "expected $expected_count managed links, found $actual_count"
 }
 

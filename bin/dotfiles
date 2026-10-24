@@ -548,8 +548,10 @@ command_adopt() {
     fi
 
     info 'Repository changes after adoption:'
-    diff_output="$(git -C "$REPO_ROOT" status --short -- "packages/$package_id"; \
-        git -C "$REPO_ROOT" diff -- "packages/$package_id")"
+    diff_output="$(
+        git -C "$REPO_ROOT" status --short -- "packages/$package_id"
+        git -C "$REPO_ROOT" diff -- "packages/$package_id"
+    )"
     if [[ -n "$diff_output" ]]; then
         indent_output "$diff_output"
     else
