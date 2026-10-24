@@ -174,8 +174,8 @@ Invoked integrations include `fzf`, `fd`, `rg`, Git LFS, and optional `eza`,
 `zoxide`, and Starship. Install the ones you use; the installer does not
 bootstrap them. External Zsh plugin files under `~/.local/share/zsh/` are
 sourced only when present. Install Alacritty's selected font separately.
-Neovim fetches lazy.nvim on first launch, and Vim may fetch vim-plug; starting
-editors can therefore access the network.
+Neovim fetches lazy.nvim on first launch. Vim uses built-in features without
+a plugin manager or startup downloads.
 
 The Fish greeting selects macOS or Linux metrics. Linux memory comes from
 `/proc/meminfo`; network details use `ip` from iproute2 when available. Missing
@@ -197,14 +197,28 @@ Vim's `.h`, `.cc`, and `.cpp` save hooks call `clang-format` resolved from `PATH
 The filename is passed with `--assume-filename` to discover the project style,
 and formatting reads the current unsaved buffer through stdin. Python support
 and a versioned Homebrew script path are no longer required. A missing, failed,
-or empty-output formatter leaves the buffer intact. The manual `Autoformat`
-shortcut continues to use its existing plugin.
+or empty-output formatter leaves the buffer intact. `<C-K>` or `:Format` formats
+C/C++ buffers manually and reports when `clang-format` is missing. Other file
+types are left unchanged by the manual command.
+
+Vim is a lightweight fallback with one shared `~/.vimrc`; the `_mac` and `_linux`
+files remain compatibility entry points. It keeps two-column tabs and the
+existing normal-mode shortcuts: `S` saves, `Q` quits, `J`/`K` move five lines,
+`N` moves to the start of the line, and `W`/`B` move five words. `sk`/`sj`/`sh`/`sl`
+open splits, `nt` opens the built-in file browser, and Space then Enter clears
+search highlighting. Use `:edit` with Tab completion to open a file and `:ls`
+then `:buffer` to switch buffers. Visual `Y` copies to the system clipboard on
+Vim builds with `+clipboard`; otherwise it yanks within Vim and reports the
+limitation. Vim keeps the directory it was started in. Plugin-specific commands
+such as `:NERDTreeToggle`, `:CtrlP`, `:Files`, and `:Autoformat` are no longer
+configured. Existing `~/.vim/plugged` files are left on disk but are not loaded
+by this configuration.
 
 Open new editor/shell sessions after updating. Reload tmux bindings in the
 intended server with `tmux source-file ~/.tmux.conf`. The helper files are part
 of their packages, so re-run `./bin/dotfiles install tmux vim nvim` after pulling
 these additions. Review other host choices, such as Neovim's Python-provider
-virtualenv and optional Vim plugin paths, when changing machines. Syntax and
+virtualenv, when changing machines. Syntax and
 focused runtime checks do not verify every external plugin/tool combination.
 
 ## Native Windows

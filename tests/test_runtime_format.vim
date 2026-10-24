@@ -1,4 +1,4 @@
-" Source only the formatting code, never plugin bootstraps or the full vimrc.
+" Exercise the formatter and complete plugin-free configurations offline.
 execute 'set runtimepath^=' . fnameescape($DOTFILES_TEST_REPO . '/packages/vim/.vim')
 execute 'edit ' . fnameescape($DOTFILES_TEST_FILE)
 call setline(1, ['int main(){', 'return 0;', '}'])
@@ -28,15 +28,33 @@ call assert_equal(0, dotfiles#format())
 call assert_equal(before, getline(1, '$'))
 let $PATH = saved_path
 
-" All three vimrc variants must register one save callback, even when reloaded.
+" Shared config and compatibility wrappers register one callback on reload.
 let $DOTFILES_FORMAT_MODE = 'expand'
-for fragment in glob($DOTFILES_TEST_FORMAT_FRAGMENTS . '/*.vim', 0, 1)
-  execute 'source ' . fnameescape(fragment)
-  execute 'source ' . fnameescape(fragment)
+for name in ['.vimrc', '.vimrc_mac', '.vimrc_linux']
+  let config = $DOTFILES_TEST_REPO . '/packages/vim/' . name
+  execute 'source ' . fnameescape(config)
+  execute 'source ' . fnameescape(config)
   call delete($DOTFILES_FORMAT_CALLS)
   doautocmd dotfiles_clang_format BufWritePre
   call assert_equal(1, len(readfile($DOTFILES_FORMAT_CALLS)))
+  call delete($DOTFILES_FORMAT_CALLS)
+  setfiletype cpp
+  Format
+  call assert_equal(1, len(readfile($DOTFILES_FORMAT_CALLS)))
 endfor
+
+" Manual formatting must not run clang-format on unrelated file types.
+setlocal filetype=python
+let before = getline(1, '$')
+call delete($DOTFILES_FORMAT_CALLS)
+Format
+call assert_equal(before, getline(1, '$'))
+call assert_false(filereadable($DOTFILES_FORMAT_CALLS))
+setlocal filetype=cpp
+let $PATH = $DOTFILES_TEST_EMPTY_BIN
+Format
+call assert_equal(before, getline(1, '$'))
+let $PATH = saved_path
 
 if !empty(v:errors)
   call writefile(v:errors, $DOTFILES_TEST_ERROR_LOG)

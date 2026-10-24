@@ -1,250 +1,68 @@
-" ===
-" === System
-" ===
+" Lightweight fallback editor. Neovim is configured separately.
 set nocompatible
-filetype on
-filetype indent on
-filetype plugin on
 filetype plugin indent on
+syntax enable
 set encoding=utf-8
 
-" Prevent incorrect background rendering
-let &t_ut=''
-
-" ===
-" === Main code display
-" ===
-set number
-" set relativenumber
-set ruler
-" set cursorline
-syntax enable
-syntax on
-
-" ===
-" === Editor behavior
-" ===
-" Better tab
-" set expandtab
-set noexpandtab
-set tabstop=2
-set shiftwidth=2
-set softtabstop=2
-set autoindent
-set list
-set listchars=tab:\|\ ,trail:▫
-set scrolloff=4
-
-" Prevent auto line split
-set wrap
-set tw=0
-
-" Better backspace
+" Display and editing: keep two-column tabs and familiar navigation.
+set number ruler
+set noexpandtab tabstop=2 shiftwidth=2 softtabstop=2 autoindent
 set backspace=indent,eol,start
+set list listchars=tab:\|\ ,trail:▫
+set scrolloff=4
+set wrap textwidth=0
+set splitright splitbelow
+set laststatus=2 showcmd
+set statusline=%f\ %m%r%h%w%=%l:%c\ %p%%
+set background=dark
 
-set foldmethod=indent
-set foldlevel=99
-
-let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-let &t_SR = "\<Esc>]50;CursorShape=2\x7"
-let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-
-" ===
-" === Window behaviors
-" ===
-set splitright
-set splitbelow
-
-" ===
-" === Status/command bar
-" ===
-set laststatus=2
-set autochdir
-set showcmd
-set formatoptions-=tc
-
-" Show command autocomplete
+" Search and built-in filename completion.
+set hlsearch incsearch ignorecase smartcase showmatch
+set wildmenu wildmode=longest,list,full
 set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
-set wildmenu                                                 " show a navigable menu for tab completion
-set wildmode=longest,list,full
 
-" Searching options
-set hlsearch
-exec "nohlsearch"
-set incsearch
-set ignorecase
-set smartcase
-set showmatch
+let mapleader = ' '
+nnoremap ; :
+nnoremap Q :q<CR>
+nnoremap S :w<CR>
+nnoremap <Leader>rc :edit ~/.vimrc<CR>
+nnoremap <Leader>sr :%s/
+nnoremap <Leader><CR> :nohlsearch<CR>
+nnoremap <Leader>sc :setlocal spell!<CR>
+nnoremap = nzz
+nnoremap - Nzz
+nnoremap K 5k
+nnoremap J 5j
+nnoremap N 0
+nnoremap W 5w
+nnoremap B 5b
+nnoremap <C-U> 5<C-Y>
+nnoremap <C-E> 5<C-E>
 
+" Splits and Vim's built-in file browser (netrw).
+nnoremap sk :aboveleft split<CR>
+nnoremap sj :belowright split<CR>
+nnoremap sh :aboveleft vsplit<CR>
+nnoremap sl :belowright vsplit<CR>
+nnoremap nt :Explore<CR>
 
-" ===
-" === Restore Cursor Position
-" ===
-au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+" Native clipboard, with an ordinary yank on Vim builds without support.
+if has('clipboard')
+  xnoremap Y "+y
+else
+  xnoremap Y y:<C-U>echo 'System clipboard unavailable; selection yanked in Vim'<CR>
+endif
 
-
-" ===
-" === Basic Mappings
-" ===
-
-" Set <LEADER> as <SPACE>
-let mapleader=" "
-
-" Column (:) mods
-map ; :
-map q; q:
-map <LEADER>r :r !
-map <LEADER>sr :%s/
-
-" Save & quit
-map Q :q<CR>
-map S :w<CR>
-
-" Open the vimrc file anytime
-map <LEADER>rc :e ~/.vimrc<CR>
-
-
-" Copy to system clipboard
-vnoremap Y :w !xclip -i -sel c<CR>
-
-" Search
-map <LEADER><CR> :nohlsearch<CR>
-noremap = nzz
-noremap - Nzz
-
-" Duplicate words
-map <LEADER>fd /\(\<\w\+\>\)\_s*\1
-
-" Others
-map <LEADER>o o<Esc>u
-
-
-" U/E keys for 5 times u/e (faster navigation)
-noremap K 5k
-noremap J 5j
-" N key: go to the start of the line
-noremap N 0
-" I key: go to the end of the line
-" noremap I $
-
-" Faster in-line navigation
-noremap W 5w
-noremap B 5b
-
-" Ctrl + U or E will move up/down the view port without moving the cursor
-noremap <C-U> 5<C-y>
-noremap <C-E> 5<C-e>
-inoremap <C-U> <Esc>5<C-y>a
-inoremap <C-E> <Esc>5<C-e>a
-
-
-" ===
-" === Window management
-" ===
-
-" Disabling the default s key
-noremap s <nop>
-
-cnoremap w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
-
-
-" split the screens to up (horizontal), down (horizontal), left (vertical), right (vertical)
-map sk :set nosplitbelow<CR>:split<CR>:set splitbelow<CR>
-map sj :set splitbelow<CR>:split<CR>
-map sh :set nosplitright<CR>:vsplit<CR>:set splitright<CR>
-map sl :set splitright<CR>:vsplit<CR>
-
-" Resize splits with arrow keys
-" map <up> :res +5<CR>
-" map <down> :res -5<CR>
-" map <left> :vertical resize-5<CR>
-" map <right> :vertical resize+5<CR>
-
-" Place the two screens up and down
-map <LEADER>sc :set spell!<CR>
-
-" Press ` to change case (instead of ~)
-map ` ~
-
-" C/C++ save formatting uses clang-format found on PATH.
-" Keep the existing plugin-driven manual formatting shortcut.
-noremap <C-K> :Autoformat<CR>
+" C/C++ formatting is optional and never installs tools at startup.
+command! Format call dotfiles#format_manual()
+nnoremap <silent> <C-K> :Format<CR>
 augroup dotfiles_clang_format
   autocmd!
   autocmd BufWritePre *.h,*.cc,*.cpp call dotfiles#format()
 augroup END
 
-
-" Auto change directory to current dir
-autocmd BufEnter * silent! lcd %:p:h
-
-"The plugs manager
-"if empty(glob('~/.vim/autoload/plug.vim'))
-"  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-"    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-"  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-"endif
-"
-
-let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
-if empty(glob(data_dir . '/autoload/plug.vim'))
-  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
-" Specify a directory for plugins
-" - For Neovim: ~/.local/share/nvim/plugged
-" - Avoid using standard Vim directory names like 'plugin'
-" call plug#begin('~/.vim/plugged')
-call plug#begin()
-
-" Make sure you use single quotes
-
-"the directory of vim
-Plug 'scrooloose/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'kien/ctrlp.vim'
-
-"dress my vim
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-
-Plug 'morhetz/gruvbox'
-Plug 'chriskempson/base16-vim'
-
-"Utilities
-Plug 'tpope/vim-commentary' "comment stuff
-Plug 'tpope/vim-surround' "allow me to change { to [
-Plug 'jiangmiao/auto-pairs' "auto complete [] and ()
-Plug 'junegunn/fzf', { 'do': { -> fzf#install()  }  }
-Plug 'junegunn/fzf.vim'
-
-"Format
-Plug 'chiel92/vim-autoformat'
-
-" Initialize plugin system
-call plug#end()
-
-" open NERDTree with nt
-map nt :NERDTreeToggle<CR>
-
-
-" if (match($TERM, "-256color") != -1) && (match($TERM, "screen-256color") == -1)
-"   set termguicolors
-" endif
-
-let base16colorspace=256
-set termguicolors " this is important
-set background=dark
-" let base16colorspace=256
-" let g:base16_shell_path="~/dev/others/base16/templates/nvim/colors"
-" colorscheme base16-atelier-dune
-" colorscheme base16-gruvbox-dark-medium
-let g:gruvbox_termcolors=16
-let g:airline_theme='base16_gruvbox_dark_medium'
-" let &t_ut=''
-" let g:gruvbox_italic=1
-" let g:gruvbox_contrast_dark='soft'
-colorscheme gruvbox
-
-set rtp+=/opt/homebrew/opt/fzf
+" Restore the last cursor position without duplicating hooks on reload.
+augroup dotfiles_vim
+  autocmd!
+  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line('$') | execute "normal! g`\"" | endif
+augroup END

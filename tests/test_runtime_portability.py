@@ -2,7 +2,6 @@
 
 import os
 from pathlib import Path
-import re
 import shutil
 import subprocess
 import tempfile
@@ -185,7 +184,32 @@ class ClipboardTests(RuntimeFixture):
 
 
 class VimFormattingTests(RuntimeFixture):
+    def vim_home(self):
+        home = self.tmp / 'home'
+        home.mkdir()
+        for name in ('.vim', '.vimrc', '.vimrc_mac', '.vimrc_linux'):
+            (home / name).symlink_to(ROOT / 'packages/vim' / name)
+        self.env['HOME'] = str(home)
+        return home
+
+    def test_clean_home_starts_without_plugins_and_browses_files(self):
+        home = self.vim_home()
+        nested = self.tmp / 'nested'
+        nested.mkdir()
+        note = nested / 'note.txt'
+        note.write_text('fixture\n')
+        self.env.update(DOTFILES_TEST_FILE=str(note),
+                        DOTFILES_TEST_ERROR_LOG=str(self.tmp / 'vim.errors'))
+        for name in ('.vimrc', '.vimrc_mac', '.vimrc_linux'):
+            with self.subTest(config=name):
+                result = subprocess.run(['vim', '-N', '-u', str(home / name), '-i', 'NONE', '-n', '-es',
+                                         '-S', str(ROOT / 'tests/test_vim_startup.vim')],
+                                        env=self.env, text=True, capture_output=True, timeout=15)
+                errors = self.tmp / 'vim.errors'
+                self.assertEqual(result.returncode, 0, result.stderr + (errors.read_text() if errors.exists() else ''))
+
     def test_formatter_uses_path_preserves_buffers_and_reloads_cleanly(self):
+        self.vim_home()
         self.env.update(PATH=str(self.bin) + os.pathsep + os.environ['PATH'],
                         DOTFILES_TEST_FILE=str(self.tmp / "file with spaces'quote.cpp"),
                         DOTFILES_FORMAT_ARGS=str(self.tmp / 'format.args'),
@@ -204,14 +228,6 @@ case "$DOTFILES_FORMAT_MODE" in
   *) printf 'int main() {\\n  return 0;\\n}\\n' ;;
 esac
 ''')
-        fragments = self.tmp / 'format-fragments'
-        fragments.mkdir()
-        self.env['DOTFILES_TEST_FORMAT_FRAGMENTS'] = str(fragments)
-        for name in ('.vimrc', '.vimrc_mac', '.vimrc_linux'):
-            source = (ROOT / 'packages/vim' / name).read_text()
-            fragment = re.search(r'^" C/C\+\+ save formatting.*?^augroup END[ \t]*$', source, re.M | re.S)
-            self.assertIsNotNone(fragment, name)
-            (fragments / (name.lstrip('.') + '.vim')).write_text(fragment.group(0) + '\n')
         result = subprocess.run(['vim', '-Nu', 'NONE', '-i', 'NONE', '-n', '-es', '-S', str(ROOT / 'tests/test_runtime_format.vim')],
                                 env=self.env, text=True, capture_output=True, timeout=15)
         errors = self.tmp / 'vim.errors'

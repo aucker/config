@@ -1,3 +1,16 @@
+" The manual command is restricted to clang-format's C/C++ use here.
+function! dotfiles#format_manual() abort
+  if index(['c', 'cpp'], &l:filetype) < 0
+    echomsg 'Format supports C/C++ buffers only'
+    return 0
+  endif
+  if !executable('clang-format')
+    echomsg 'Install clang-format on PATH to format C/C++ buffers'
+    return 0
+  endif
+  return dotfiles#format()
+endfunction
+
 " Format the current buffer through PATH, without a Python provider or -i writes.
 function! dotfiles#format() abort
   if !&l:modifiable || &l:binary || &l:buftype !=# '' || !executable('clang-format')
